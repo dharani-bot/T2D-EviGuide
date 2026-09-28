@@ -1,0 +1,9 @@
+metric,value,percentage,interpretation
+Eligible MIMIC cases,44.0,100.0,Real de-identified MIMIC-IV Demo cases selected for prototype evaluation
+Successful assessments,42.0,95.5,Assessment completion rate; not accuracy
+Evidence retrieval coverage,42.0,100.0,Successful assessments with retrieved evidence
+HbA1c/IGT terminology errors,5.0,11.9,Confirmed among successful assessments
+Numerical threshold errors,2.0,4.8,Confirmed among successful assessments
+Confirmed fasting-interpretation errors,0.0,0.0,0 confirmed among 5 manually reviewed automated flags
+Medication-action language,0.0,0.0,No detected medication-change instructions in successful assessments
+Mean missing-data indicators,8.64,,Average number of missing-data indicators per successful assessment

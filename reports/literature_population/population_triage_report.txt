@@ -1,0 +1,73 @@
+T2D-EviGuide Population-Aware PubMed Triage v2
+=======================================================
+
+Input records: 209
+
+Category distribution:
+core         2
+supporting   14
+review       1
+peripheral   192
+
+Population distribution:
+experimental           187
+other                  8
+special_population     7
+core_population        5
+established_t2d        2
+
+This is a transparent rule-based relevance triage, not a clinical evidence-quality assessment.
+Human review is required before permanent RAG ingestion.
+
+Top 50 candidates for manual review:
+-------------------------------------------------------
+review       core_population       24 42728572 Epigenetic and genetic factors modifying the association between diet quality and incident type 2 diabetes: the EPIC-Potsdam cohort.
+core         core_population       21 42752803 Beyond Traditional Glycemic Measures: CGM Glycemic Profiles Reveal Associations With Cardiometabolic Risk in Individuals Without Diabetes.
+core         core_population       20 42796297 Type 2 Diabetes, Visceral Adiposity, and Carotid Intima-Media Thickness in Hospitalized Adults: A Retrospective Cross-Sectional Analysis.
+supporting   core_population       13 42783393 Cardiometabolic Risk Factors and Domain-Specific Cognitive Function in Prediabetes and Type 2 Diabetes.
+supporting   special_population    11 42764545 Dolutegravir Is Associated With Lower Odds of Gestational Diabetes Compared to Other Antiretroviral Therapy Regimens Among Pregnant Women in India: A Cross-Sectional Analysis.
+peripheral   core_population       10 42801394 Genetic Association of VDR Polymorphism with Diabetic Foot Ulcers in Type 2 Diabetes: Evidence from Kerala, India.
+supporting   special_population     9 42708616 Postpartum Glycaemic Phenotype and Continuous Glucose Monitoring at 4-6 Years After Gestational Diabetes Defined by Different Diagnostic Criteria.
+supporting   special_population     9 42714766 Gestational weight loss relative to prepregnancy weight in women with gestational diabetes: impact on maternal and neonatal outcomes.
+supporting   special_population     8 42722448 Diabetes related genetics and outcomes after total pancreatectomy with islet autotransplantation.
+supporting   special_population     5 42786007 Current antiretrovirals, hyperglycemia, and type 2 diabetes in people with HIV.
+peripheral   experimental           3 42743331 Temporal patterns of tuberculosis-associated hyperglycaemia and its effect on treatment outcomes in individuals not previously diabetic: A prospective cohort study.
+supporting   other                  3 42749101 Risk Factors and Definition of Younger-Onset Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD) Cirrhosis.
+supporting   special_population     3 42750677 How to improve uptake and adherence to dietary trials in gestational diabetes amongst South Asian women: insights from patient and public involvement and engagement.
+peripheral   experimental           2 42716862 One-year progression from prediabetes to type 2 diabetes in a Turkish primary-care cohort: a prospective study.
+peripheral   experimental           2 42736402 Differential physical activity responses to diabetes risk reduction interventions according to prediabetes phenotype in at-risk individuals: pooled analysis from three randomised controlled trials.
+supporting   other                  1 42786919 Productivity loss associated with type 2 diabetes in China: the trend and projection from 1990 to 2050.
+peripheral   experimental           1 42717332 Postpartum GLP-1 receptor agonists and SGLT-2 therapies in women with prior gestational diabetes: current evidence and uncertainties.
+peripheral   experimental           1 42711084 Optimised carbohydrate dietary intervention for improving metabolic health in adults with prediabetes: study protocol for a multicentre randomised controlled trial.
+supporting   other                  1 42801108 Is direct oxidative damage of bone collagen associated with poor human cortical bone tissue fracture resistance?
+supporting   other                  1 42798868 Episodic hypercortisolemia-mediated periods of worsening hyperglycemia in cyclic Cushing syndrome.
+peripheral   experimental           1 42793505 Differential Associations of Healthy Lifestyle Latent Classes with Glycemic Transitions in Prediabetes: An Observational Study Based on CHARLS.
+peripheral   experimental           1 42787147 Association of the CUN-BAE index with glycemic outcomes in individuals with impaired fasting glucose: a retrospective multicenter Chinese cohort study.
+peripheral   experimental           0 42764073 Risk prediction models for incident type 2 diabetes: A scoping review and an update to a systematic review.
+peripheral   other                  0 42800899 Knowledge and Attitudes Regarding Continuous Glucose Monitors as Predictors of Current Use.
+peripheral   experimental           0 42711998 Evidence-based ranking of diabetes prevention in prediabetes: A comprehensive network meta-analysis of 378 randomised controlled trials.
+peripheral   other                  0 42760071 Diabetes status, fasting glucose and HbA1c, and outcomes after myocardial infarction: a retrospective registry-based Swedish cohort study.
+peripheral   experimental           0 42709983 Comparison of Traditional Chinese Exercise and Equipment-Based Exercise on Glycaemic Control and Vitamin D Levels in Middle-Aged and Elderly Patients With Prediabetes: A Randomised Controlled Trial.
+peripheral   experimental          -1 42733155 OGTT-Derived β-Cell Function-Based Stratification of 2-Year Glycaemic Transitions in Chinese Adults With Prediabetes.
+peripheral   experimental          -1 42796931 Effects of Chokeberry Juice Added to a Mediterranean-Style Diet on Glycemic Control and Redox Homeostasis in Women with Prediabetes: A Randomized Controlled Trial.
+peripheral   experimental          -1 42763677 Effectiveness of Structured Education Programmes on Diet and Exercise for Preventing Type 2 Diabetes in Adults With Prediabetes: A Systematic Review.
+peripheral   experimental          -2 42609412 The Metabolic Legacy of Acute Pancreatitis: Post-Pancreatitis Diabetes Mellitus.
+peripheral   experimental          -2 42787268 Structured lifestyle modification and biological aging: effects on PhenoAge, sclerostin, and GDF-15 in arab adults with prediabetes.
+peripheral   experimental          -2 42740863 Risk factors for incident type 2 diabetes among adults with impaired fasting glucose: a comparison of three regression models accounting for competing mortality in Liuzhou, Guangxi, China.
+peripheral   experimental          -2 42781339 Machine learning-based risk prediction models for type 2 diabetes in primary care: a scoping review.
+peripheral   experimental          -3 42750540 Predicting the Long-Term Risk of Type 2 Diabetes and Cardiovascular Disease With Orforglipron in People With Overweight or Obesity: A Post Hoc Analysis of the ATTAIN-1 Trial.
+peripheral   experimental          -3 42758305 Menopause hormone therapy and type 2 diabetes risk and prognosis: systematic review and meta-analyses.
+peripheral   experimental          -3 42656588 Glycemia-based predictors of T2D development in adults with obesity and prediabetes: SURMOUNT-1 post hoc analysis.
+supporting   other                 -3 42784439 Factors Associated With Falls Among the Elderly With Type 2 Diabetes in Urban Shanghai: A Cross-Sectional Study.
+peripheral   experimental          -3 42744583 Differences in screen-detected type 2 diabetes in two targeted community-based screening campaigns in Denmark.
+supporting   established_t2d       -3 42758555 Association between Glycemic Control and Survival in Patients with Type 2 Diabetes on Peritoneal Dialysis: Results from the PDOPPS.
+peripheral   experimental          -3 42760714 Age- and sex-specific associations between thyroid function and diabetes in Korean adults: A nationwide cross-sectional study.
+peripheral   experimental          -4 42796049 Effects of High-Intensity Interval Versus Moderate-Intensity Continuous Training in Adults with Prediabetes: A Single-Blind Randomized Controlled Trial.
+peripheral   experimental          -4 42597012 Continuous glucose monitoring profiles during postpartum glucose tolerance test results among people with gestational diabetes.
+peripheral   experimental          -4 42745970 Beyond Soil Selenium: Agroindustrial Exposure Pathways and Diabetes Risk Assessment in Contemporary China.
+peripheral   experimental          -4 42620256 Adverse cardio-metabolic risk profile and epicardial adiposity in patients with adrenal adenoma: a cross-sectional study.
+peripheral   experimental          -5 42754851 Nutrigenomics in the prevention and management of type 2 diabetes and obesity: A systematic review of clinical trials.
+peripheral   experimental          -5 42677460 Blood Metabolomic Signatures of 1-Hour Glucose Predict Cardiometabolic Risk.
+peripheral   experimental          -5 42590022 Association Between HbA1c Levels and Postpartum Depressive Symptoms: Insights from Edinburgh Postnatal Depression Scale Screening After Gestational Diabetes Mellitus.
+peripheral   experimental          -6 42771547 [Association between anthropometric clinical predictors and HOMA-IR].
+peripheral   experimental          -6 42729417 Whole wheat bread improves postprandial glucose tolerance in adults with prediabetes: a controlled-feeding randomized crossover trial with microbiome-associated variation in response.

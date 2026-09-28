@@ -1,0 +1,33 @@
+T2D-EviGuide PubMed Literature Triage
+===================================
+
+Input records: 106
+core: 2
+supporting: 16
+review: 15
+peripheral: 73
+
+This is a transparent rule-based relevance triage, not a clinical evidence-quality assessment.
+Human review is required before permanent RAG ingestion.
+
+Top 20 records:
+supporting  29 42781403 Metabolic Risk Predictors Associated With the Onset of Vascular Complications Among Patients With Type 2 Diabetes in Zambia: A Retrospective Statistical Modeling Study.
+core        27 42763677 Effectiveness of Structured Education Programmes on Diet and Exercise for Preventing Type 2 Diabetes in Adults With Prediabetes: A Systematic Review.
+supporting  22 42761404 Real-World Outcomes of Telemedicine Shared Medical Appointments in Obesity Management.
+peripheral  19 42796297 Type 2 Diabetes, Visceral Adiposity, and Carotid Intima-Media Thickness in Hospitalized Adults: A Retrospective Cross-Sectional Analysis.
+peripheral  18 42774975 Beyond Glycated Hemoglobin (HbA1c): A Systematic Review of Metabolic Interventions, Insulin Resistance, and Cognitive Function Across the Obesity-to-Diabetes Continuum.
+supporting  18 42798059 Serum FAM19A5 in newly diagnosed type 2 diabetes mellitus and its association with metabolic and inflammatory parameters: A case-control study.
+peripheral  17 42784439 Factors Associated With Falls Among the Elderly With Type 2 Diabetes in Urban Shanghai: A Cross-Sectional Study.
+supporting  15 42769275 Comparison of 5-year glycemic outcomes after sleeve gastrectomy and Roux-en-Y gastric bypass in patients with pre-operative dysglycemia.
+peripheral  15 42793151 Perspectives of Natural Products and Sialic Acid Mimetics as Modulators of Human Sialidases NEU1-3 in Atherosclerosis.
+peripheral  14 42799518 Diabetic Autonomic Neuropathy Among Patients With Diabetes in Rural Warangal in India: A Cross-Sectional Study.
+supporting  14 42787830 Efficacy of Dapagliflozin vs. Saroglitazar on Hepatic Steatosis and Fibrosis in Patients of Type 2 Diabetes Mellitus and Metabolic-Associated Steatotic Liver Disease (MASLD).
+supporting  14 42769672 Obstructive sleep apnoea and glucose dysregulation in type 2 diabetes: a systematic review of the literature.
+supporting  13 42774519 Decoding the Indian plate: dietary patterns and their glycemic implications in Type 2 diabetes mellitus-a narrative review.
+supporting  12 42798433 Changes in short-chain fatty acids across the glycemic spectrum: a systematic review and meta-analysis.
+peripheral  12 42798462 Factors associated with sarcopenia in elderly patients with type 2 diabetes mellitus.
+supporting  11 42794540 Coptidis Rhizoma for Obesity, Diabetes, and Dyslipidemia: An Integrated Meta-Analysis and In Silico Study.
+supporting  11 42796419 Potentially Inappropriate Medication Use in Older Adults in Primary Care According to Four Explicit Criteria: Associations with Patient Factors.
+peripheral  11 42798458 Repurposing a prostate tumor marker: elevated FPSA/TPSA ratio as a novel non-invasive biomarker for declining eGFR in male type 2 diabetes.
+supporting  10 42788129 Insulin Resistance and Beta Cell Function in Hepatogenous Diabetes.
+supporting  10 42795722 Low Serum C-Peptide and Albuminuria Severity in Type 2 Diabetes Mellitus: A Cross-Sectional Study.

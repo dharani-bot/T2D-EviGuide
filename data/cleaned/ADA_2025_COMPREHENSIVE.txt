@@ -1,0 +1,22 @@
+TITLE
+4. Comprehensive Medical Evaluation and Assessment of Comorbidities: Standards of Care in Diabetes-2025.
+
+SOURCE
+American Diabetes Association
+
+YEAR
+2025
+
+CATEGORY
+clinical_guidelines
+
+PMID
+39651988
+
+DOI
+10.2337/dc25-S004
+
+PMC_ID
+11635044
+
+ABSTRACT

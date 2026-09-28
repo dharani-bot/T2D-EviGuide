@@ -1,0 +1,58 @@
+T2D-EviGuide Targeted PubMed Literature Triage
+=============================================
+Input records: 209
+core: 56
+supporting: 67
+review: 49
+peripheral: 37
+
+This is a transparent rule-based relevance triage, not a clinical evidence-quality assessment.
+Human review is required before permanent RAG ingestion.
+
+Top 30 records:
+
+core         30 42796348 Cardiovascular-Kidney-Metabolic Syndrome and Its Hepatic Dimension: A Narrative Review.
+core         28 42609412 The Metabolic Legacy of Acute Pancreatitis: Post-Pancreatitis Diabetes Mellitus.
+core         26 42708616 Postpartum Glycaemic Phenotype and Continuous Glucose Monitoring at 4-6 Years After Gestational Diabetes Defined by Different Diagnostic Criteria.
+core         24 42774975 Beyond Glycated Hemoglobin (HbA1c): A Systematic Review of Metabolic Interventions, Insulin Resistance, and Cognitive Function Across the Obesity-to-Diabetes Continuum.
+core         23 42709983 Comparison of Traditional Chinese Exercise and Equipment-Based Exercise on Glycaemic Control and Vitamin D Levels in Middle-Aged and Elderly Patients With Prediabetes: A Randomised Controlled Trial.
+core         22 42716862 One-year progression from prediabetes to type 2 diabetes in a Turkish primary-care cohort: a prospective study.
+core         22 42787268 Structured lifestyle modification and biological aging: effects on PhenoAge, sclerostin, and GDF-15 in arab adults with prediabetes.
+core         21 42711084 Optimised carbohydrate dietary intervention for improving metabolic health in adults with prediabetes: study protocol for a multicentre randomised controlled trial.
+core         20 42711998 Evidence-based ranking of diabetes prevention in prediabetes: A comprehensive network meta-analysis of 378 randomised controlled trials.
+core         20 42733155 OGTT-Derived β-Cell Function-Based Stratification of 2-Year Glycaemic Transitions in Chinese Adults With Prediabetes.
+core         20 42590022 Association Between HbA1c Levels and Postpartum Depressive Symptoms: Insights from Edinburgh Postnatal Depression Scale Screening After Gestational Diabetes Mellitus.
+core         18 42796049 Effects of High-Intensity Interval Versus Moderate-Intensity Continuous Training in Adults with Prediabetes: A Single-Blind Randomized Controlled Trial.
+core         18 42798059 Serum FAM19A5 in newly diagnosed type 2 diabetes mellitus and its association with metabolic and inflammatory parameters: A case-control study.
+core         18 42597012 Continuous glucose monitoring profiles during postpartum glucose tolerance test results among people with gestational diabetes.
+core         17 42745769 Incremental effects of SGLT2 inhibitors, GLP-1 receptor agonists, and pioglitazone in type 2 diabetes and MASLD across Asian study settings: a systematic review and meta-analysis.
+core         17 42656588 Glycemia-based predictors of T2D development in adults with obesity and prediabetes: SURMOUNT-1 post hoc analysis.
+core         16 42796931 Effects of Chokeberry Juice Added to a Mediterranean-Style Diet on Glycemic Control and Redox Homeostasis in Women with Prediabetes: A Randomized Controlled Trial.
+core         16 42736402 Differential physical activity responses to diabetes risk reduction interventions according to prediabetes phenotype in at-risk individuals: pooled analysis from three randomised controlled trials.
+core         16 42767624 Lipoedema and Obesity Misclassification: A Phenotype Based Approach to Cardiometabolic Risk Beyond Body Mass Index.
+core         15 42783393 Cardiometabolic Risk Factors and Domain-Specific Cognitive Function in Prediabetes and Type 2 Diabetes.
+core         15 42771870 Applying the ORBIT model to design a patient-facing mHealth app for diabetes prevention in urban primary care: translating patient perspectives into app design.
+core         15 42744583 Differences in screen-detected type 2 diabetes in two targeted community-based screening campaigns in Denmark.
+core         15 42732963 Progressive islet remodeling during the prediabetic stage in female SDT rats.
+core         15 42798462 Factors associated with sarcopenia in elderly patients with type 2 diabetes mellitus.
+core         15 42780359 Clinical characteristics of subclinical carotid atherosclerosis in middle-aged and elderly populations with different glucose metabolism statuses: a cross-sectional study.
+core         15 42781403 Metabolic Risk Predictors Associated With the Onset of Vascular Complications Among Patients With Type 2 Diabetes in Zambia: A Retrospective Statistical Modeling Study.
+core         15 42793505 Differential Associations of Healthy Lifestyle Latent Classes with Glycemic Transitions in Prediabetes: An Observational Study Based on CHARLS.
+core         14 42772320 Prevalence of liver fibrosis and steatotic liver disease in community-dwelling adults in China (the CHESS-LiverHealth project): cross-sectional baseline data from a prospective cohort study.
+core         14 42771547 [Association between anthropometric clinical predictors and HOMA-IR].
+core         14 42766657 Association of a multiple risk factor assessment and intervention program with risk of diabetes: A population-based matched cohort study.
+
+Topic distribution:
+
+early_risk                     25
+prediabetes_progression        24
+diagnosis                      23
+screening                      19
+oral_glucose_tolerance         18
+risk_prediction                18
+prevention                     15
+fasting_glucose                14
+lifestyle                      14
+clinical_guidelines            14
+hba1c                          13
+risk_factors                   12

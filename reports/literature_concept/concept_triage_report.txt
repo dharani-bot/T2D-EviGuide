@@ -1,0 +1,64 @@
+T2D-EviGuide Concept-Based PubMed Triage
+==================================================
+
+Input records: 209
+core: 101
+supporting: 3
+review: 12
+peripheral: 93
+
+This is a transparent relevance triage, not a clinical evidence-quality assessment.
+Human review is required before permanent RAG ingestion.
+
+Top 50 candidates:
+--------------------------------------------------
+core          20 42716862 One-year progression from prediabetes to type 2 diabetes in a Turkish primary-care cohort: a prospective study.
+core          20 42709983 Comparison of Traditional Chinese Exercise and Equipment-Based Exercise on Glycaemic Control and Vitamin D Levels in Middle-Aged and Elderly Patients With Prediabetes: A Randomised Controlled Trial.
+core          19 42714766 Gestational weight loss relative to prepregnancy weight in women with gestational diabetes: impact on maternal and neonatal outcomes.
+core          19 42708616 Postpartum Glycaemic Phenotype and Continuous Glucose Monitoring at 4-6 Years After Gestational Diabetes Defined by Different Diagnostic Criteria.
+core          18 42743331 Temporal patterns of tuberculosis-associated hyperglycaemia and its effect on treatment outcomes in individuals not previously diabetic: A prospective cohort study.
+core          18 42711084 Optimised carbohydrate dietary intervention for improving metabolic health in adults with prediabetes: study protocol for a multicentre randomised controlled trial.
+core          17 42740863 Risk factors for incident type 2 diabetes among adults with impaired fasting glucose: a comparison of three regression models accounting for competing mortality in Liuzhou, Guangxi, China.
+core          17 42787268 Structured lifestyle modification and biological aging: effects on PhenoAge, sclerostin, and GDF-15 in arab adults with prediabetes.
+core          17 42793505 Differential Associations of Healthy Lifestyle Latent Classes with Glycemic Transitions in Prediabetes: An Observational Study Based on CHARLS.
+core          16 42763677 Effectiveness of Structured Education Programmes on Diet and Exercise for Preventing Type 2 Diabetes in Adults With Prediabetes: A Systematic Review.
+core          16 42736402 Differential physical activity responses to diabetes risk reduction interventions according to prediabetes phenotype in at-risk individuals: pooled analysis from three randomised controlled trials.
+core          16 42711998 Evidence-based ranking of diabetes prevention in prediabetes: A comprehensive network meta-analysis of 378 randomised controlled trials.
+core          16 42752803 Beyond Traditional Glycemic Measures: CGM Glycemic Profiles Reveal Associations With Cardiometabolic Risk in Individuals Without Diabetes.
+core          16 42733155 OGTT-Derived β-Cell Function-Based Stratification of 2-Year Glycaemic Transitions in Chinese Adults With Prediabetes.
+core          16 42620256 Adverse cardio-metabolic risk profile and epicardial adiposity in patients with adrenal adenoma: a cross-sectional study.
+core          15 42796297 Type 2 Diabetes, Visceral Adiposity, and Carotid Intima-Media Thickness in Hospitalized Adults: A Retrospective Cross-Sectional Analysis.
+core          15 42717332 Postpartum GLP-1 receptor agonists and SGLT-2 therapies in women with prior gestational diabetes: current evidence and uncertainties.
+core          15 42787147 Association of the CUN-BAE index with glycemic outcomes in individuals with impaired fasting glucose: a retrospective multicenter Chinese cohort study.
+core          14 42774975 Beyond Glycated Hemoglobin (HbA1c): A Systematic Review of Metabolic Interventions, Insulin Resistance, and Cognitive Function Across the Obesity-to-Diabetes Continuum.
+core          14 42796049 Effects of High-Intensity Interval Versus Moderate-Intensity Continuous Training in Adults with Prediabetes: A Single-Blind Randomized Controlled Trial.
+core          13 42750540 Predicting the Long-Term Risk of Type 2 Diabetes and Cardiovascular Disease With Orforglipron in People With Overweight or Obesity: A Post Hoc Analysis of the ATTAIN-1 Trial.
+core          13 42796931 Effects of Chokeberry Juice Added to a Mediterranean-Style Diet on Glycemic Control and Redox Homeostasis in Women with Prediabetes: A Randomized Controlled Trial.
+core          13 42732963 Progressive islet remodeling during the prediabetic stage in female SDT rats.
+core          13 42796348 Cardiovascular-Kidney-Metabolic Syndrome and Its Hepatic Dimension: A Narrative Review.
+core          13 42677460 Blood Metabolomic Signatures of 1-Hour Glucose Predict Cardiometabolic Risk.
+core          13 42764073 Risk prediction models for incident type 2 diabetes: A scoping review and an update to a systematic review.
+core          12 42744583 Differences in screen-detected type 2 diabetes in two targeted community-based screening campaigns in Denmark.
+core          12 42729417 Whole wheat bread improves postprandial glucose tolerance in adults with prediabetes: a controlled-feeding randomized crossover trial with microbiome-associated variation in response.
+core          12 42764545 Dolutegravir Is Associated With Lower Odds of Gestational Diabetes Compared to Other Antiretroviral Therapy Regimens Among Pregnant Women in India: A Cross-Sectional Analysis.
+core          12 42798059 Serum FAM19A5 in newly diagnosed type 2 diabetes mellitus and its association with metabolic and inflammatory parameters: A case-control study.
+core          12 42609412 The Metabolic Legacy of Acute Pancreatitis: Post-Pancreatitis Diabetes Mellitus.
+core          11 42783393 Cardiometabolic Risk Factors and Domain-Specific Cognitive Function in Prediabetes and Type 2 Diabetes.
+core          11 42754851 Nutrigenomics in the prevention and management of type 2 diabetes and obesity: A systematic review of clinical trials.
+core          11 42590022 Association Between HbA1c Levels and Postpartum Depressive Symptoms: Insights from Edinburgh Postnatal Depression Scale Screening After Gestational Diabetes Mellitus.
+core          10 42780359 Clinical characteristics of subclinical carotid atherosclerosis in middle-aged and elderly populations with different glucose metabolism statuses: a cross-sectional study.
+core          10 42788129 Insulin Resistance and Beta Cell Function in Hepatogenous Diabetes.
+core          10 42656588 Glycemia-based predictors of T2D development in adults with obesity and prediabetes: SURMOUNT-1 post hoc analysis.
+core          10 42597012 Continuous glucose monitoring profiles during postpartum glucose tolerance test results among people with gestational diabetes.
+core          10 42749101 Risk Factors and Definition of Younger-Onset Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD) Cirrhosis.
+supporting    10 42750677 How to improve uptake and adherence to dietary trials in gestational diabetes amongst South Asian women: insights from patient and public involvement and engagement.
+core           9 42769838 Triglyceride-glucose index as a biochemical predictor of hypertension in patients with type 2 diabetes and prediabetes: Evidence from the NHANES database.
+core           9 42786007 Current antiretrovirals, hyperglycemia, and type 2 diabetes in people with HIV.
+core           9 42783806 Association Between Obesity Severity and Bioelectrical Impedance Analysis-Derived Metabolic Age in Individuals with Type 2 Diabetes Mellitus.
+core           9 42739203 Ferritin and Soluble Transferrin Receptor Beyond Inflammation: Independent Associations with Fasting Glucose and Metabolic Syndrome in a Central Asian Cohort.
+core           9 42728572 Epigenetic and genetic factors modifying the association between diet quality and incident type 2 diabetes: the EPIC-Potsdam cohort.
+core           9 42722448 Diabetes related genetics and outcomes after total pancreatectomy with islet autotransplantation.
+core           8 42781403 Metabolic Risk Predictors Associated With the Onset of Vascular Complications Among Patients With Type 2 Diabetes in Zambia: A Retrospective Statistical Modeling Study.
+core           7 42771547 [Association between anthropometric clinical predictors and HOMA-IR].
+core           7 42745970 Beyond Soil Selenium: Agroindustrial Exposure Pathways and Diabetes Risk Assessment in Contemporary China.
+core           7 42796988 Enhanced Metabolic Risks in Patients with Obesity and Nutritional Deficiencies in the U.S.: A TriNetX Study.

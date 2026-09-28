@@ -1,0 +1,80 @@
+TITLE
+Screening for Prediabetes and Type 2 Diabetes: US Preventive Services Task Force Recommendation Statement.
+
+SOURCE
+United States Preventive Services Task Force
+
+YEAR
+2021
+
+CATEGORY
+clinical_guidelines
+
+PMID
+34427594
+
+DOI
+10.1001/jama.2021.12531
+
+PMC_ID
+13583556
+
+ABSTRACT
+IMPORTANCE: An estimated 13% of all US adults (18 years or older) have diabetes, and 34.5% meet criteria for prediabetes. The prevalences of prediabetes and diabetes are higher in older adults. Estimates of the risk of progression from prediabetes to diabetes vary widely, perhaps because of differences in the definition of prediabetes or the heterogeneity of prediabetes. Diabetes is the leading cause of kidney failure and new cases of blindness among adults in the US. It is also associated with increased risks of cardiovascular disease, nonalcoholic fatty liver disease, and nonalcoholic steatohepatitis and was estimated to be the seventh leading cause of death in the US in 2017. Screening asymptomatic adults for prediabetes and type 2 diabetes may allow earlier detection, diagnosis, and treatment, with the ultimate goal of improving health outcomes.
+
+OBJECTIVE: To update its 2015 recommendation, the USPSTF commissioned a systematic review to evaluate screening for prediabetes and type 2 diabetes in asymptomatic, nonpregnant adults and preventive interventions for those with prediabetes.
+
+POPULATION: Nonpregnant adults aged 35 to 70 years seen in primary care settings who have overweight or obesity (defined as a body mass index ≥25 and ≥30, respectively) and no symptoms of diabetes.
+
+EVIDENCE ASSESSMENT: The USPSTF concludes with moderate certainty that screening for prediabetes and type 2 diabetes and offering or referring patients with prediabetes to effective preventive interventions has a moderate net benefit.
+
+CONCLUSIONS AND RECOMMENDATION: The USPSTF recommends screening for prediabetes and type 2 diabetes in adults aged 35 to 70 years who have overweight or obesity. Clinicians should offer or refer patients with prediabetes to effective preventive interventions. (B recommendation).
+
+FULL_TEXT
+Prevalencia
+La prediabetes es un estado caracterizado por glucemias basales alteradas (100-125 mg/dL) o intolerancia a la glucosa (IGT) (140-199 mg/dL a las 2 h de una prueba de tolerancia oral) o valores de hemoglobina glicosilada (HbA1c) entre 5,7% y 6,4%1. La prevalencia se sitúa entre el 9 y 12% a nivel mundial2.
+
+Hace más de 20 años, la Asociación Americana de Diabetes (ADA) reemplazó los términos «intolerancia a la glucosa» y «glucemia en ayunas alterada» (IFG) por «prediabetes» una medida controvertida que desde entonces ha generado un acalorado debate3. Los defensores del cambio argumentan que el término es útil para comprender el potencial preventivo a nivel individual, mientras que los detractores sostienen que etiquetar a todas las personas con hiperglucemia intermedia como si tuvieran una pre-enfermedad medicaliza a una gran proporción de la población3, derivando en problemas como la estigmatización y la ansiedad por la salud, a pesar de que es posible que nunca llegue a causarles un malestar real.
+
+Morbimortalidad
+La prediabetes incrementa el riesgo de padecer enfermedades cardiovasculares, enfermedad renal crónica, demencia4, mortalidad total (19%) y cardiovascular (22%)5. Además, contribuye al riesgo de sufrir complicaciones clínicas incluso sin la progresión a una diabetes manifiesta6.
+
+Factores de riesgo
+Hay diferentes factores de riesgo asociados con una mayor probabilidad de sufrir prediabetes. Edad > 35 años, obesidad, familiares de primer grado con diabetes tipo 2 (DM2), etnia latina y afroamericana, historia de enfermedad cardiovascular, HDL < 35 mg/dL o triglicéridos > 250 mg/dL, hipertensión arterial, síndrome de ovario poliquístico, sedentarismo o resistencia a la insulina7.
+
+Además, factores como la edad, sexo masculino, antecedentes familiares de DM2, índice de masa corporal elevado, estilo de vida poco saludable, ansiedad, depresión, hipertensión arterial, y triglicéridos altos, incrementan el riesgo de progresión a DM27. Más del 50% de las personas con prediabetes desarrollarán diabetes8 con un ritmo de progresión entre el 5% y 10% anual1.
+
+Controversias en el diagnóstico
+No hay consenso en cuanto a los criterios diagnósticos. La Organización Mundial de la Salud (OMS) ha definido la prediabetes como un estado de hiperglucemia intermedia en base a parámetros como IGT en ayunas (IFG)-glucosa plasmática en ayunas (FPG) de 6,1 a 6,9 mmol/L (110 a 125 mg/dL)-y la IGT (glucosa plasmática a las 2 h de 7,8-11,0 mmol/L (140-199 mg/dL) tras la ingestión de 75 g de glucosa oral una combinación de ambas9-. El Programa de actividades preventivas y de promoción de la salud de la Sociedad Española de Medicina Familiar y Comunitaria (PAPPS) recomienda realizar la prueba de glucosa plasmática a la hora, con un punto de corte de glucemia ≥ 155 mg/dL10.
+
+La ADA1, el National Institute of Health and Care Excellence (NICE)11 y el PAPPS10 tiene el mismo valor de corte para la IGT (140-199 mg/dL) que la OMS, pero más bajo para la IFG (100-125 mg/dL), y establece criterios adicionales basados en la hemoglobina glicosilada (HbA1c), con un nivel del 5,7% al 6,4%, para la definición de prediabetes1, 9, 10.
+
+Controversias en el cribado
+Según el PAPPS, no puede recomendarse el cribado poblacional de prediabetes o DM2 mediante glucemia, salvo en pacientes con factores de riesgo asociados o con antecedentes familiares de diabetes, recomendando realizar la prueba aprovechando la petición de una analítica por cualquier motivo10. En cambio, el Grupo de trabajo sobre servicios preventivos de EE. UU. (USPSTF), recomienda la detección de prediabetes y DM2 en adultos de 35 a 70 años con sobrepeso u obesidad12. La ADA 2026 recomienda realizar pruebas a personas asintomáticas de cualquier edad con sobrepeso u obesidad y cualquier factor de riesgo adicional para la diabetes y la realización de pruebas de detección a todos los adultos de 35 años o más independientemente de los factores de riesgo1.
+
+Seguimiento e intervenciones no estandarizadas
+En población general se recomienda repetir estas pruebas cada tres años1, 13 si los resultados son normales, excepto el PAPPS que no lo recomienda por no existir una evidencia clara10.
+
+La intervención en personas de alto riesgo desempeña un papel vital en retrasar o prevenir el desarrollo de la DM2. Las estrategias pueden realizarse a nivel poblacional e individual. Los enfoques individuales se enfocan en identificar a las personas con mayor riesgo de desarrollar DM2 y en ofrecer intervenciones específicas. Programas de prevención que se centran en modificaciones del estilo de vida han sido eficaces para prevenir o retrasar la progresión de la diabetes en personas con tolerancia a la glucosa deteriorada, con una reducción del riesgo relativo del 40% al 70%1.
+
+Conclusiones y propuestas futuras
+Se observa un interés creciente con relación al abordaje de la prediabetes, sin embargo, existen controversias que dificultan su aplicación. Estudios económicos sugieren que el cribado de la prediabetes, seguido de intervenciones intensivas en el estilo de vida, resulta rentable en comparación con la ausencia de cribado, especialmente cuando se inicia en adultos más jóvenes (entre 35 y 45 años) y en personas con obesidad13. El centro para el control de enfermedad de EE. UU., según su Programa Nacional de Prevención de la Diabetes, propone una reducción de peso de entre el 5 y el 7% del peso corporal y hacer actividad física regularmente durante por lo menos 150 minutos a la semana14.
+
+Actualmente, diversos autores, han sugerido modificar la terminología prediabetes por hiperglucemia intermedia o etapa temprana de la diabetes para maximizar resultados en la promoción de la salud en estas personas15. Por otro lado, en un servicio de atención primaria cada vez más saturado, también es necesario considerar los costes de oportunidad de identificar y gestionar una nueva «afección»16.
+
+Para avanzar en un abordaje óptimo de la prediabetes, se propone profundizar en la epidemiologia y variabilidad en la actitud de los profesionales de atención primaria, la estandarización versus la personalización del cribado, así como explorar nuevas formas de diagnóstico (por ejemplo, la monitorización continua de la glucosa) e intervenciones no farmacológicas en atención primaria.
+
+Autoría
+El manuscrito ha sido redactado por Antxon Apiñaniz, y revisado y aceptado por Raquel Cobos.
+
+Consideraciones éticas
+No aplica. El manuscrito no incorpora datos de pacientes.
+
+Uso de la IA
+El manuscrito ha sido elaborado sin apoyo y soporte de la inteligencia artificial.
+
+Financiación
+Este artículo ha sido elaborado sin financiación.
+
+Conflicto de intereses
+Los autores declaran no tener conflicto de intereses.

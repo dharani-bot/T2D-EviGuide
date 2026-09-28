@@ -1,0 +1,11 @@
+article_id,title,source,year,category,pmid,doi,file_name
+ADA_2025_DIAGNOSIS,Diagnosis and Classification of Diabetes: Standards of Care in Diabetes-2025,American Diabetes Association,2025,biomarkers,39651986,10.2337/dc25-S002,
+ADA_2026_PHARMACOLOGIC,Pharmacologic Approaches to Glycemic Treatment: Standards of Care in Diabetes-2026,American Diabetes Association,2026,medications,41358900,10.2337/dc26-S009,
+AACE_2026_T2D,American Association of Clinical Endocrinology Consensus Statement: Algorithm for Management of Adults With Type 2 Diabetes - 2026 Update,American Association of Clinical Endocrinology,2026,clinical_guidelines,41842862,10.1016/j.eprac.2026.01.006,
+ADA_2026_CKD,Chronic Kidney Disease and Risk Management: Standards of Care in Diabetes-2026,American Diabetes Association,2026,biomarkers,41358881,10.2337/dc26-S011,
+ADA_2026_OBESITY,Obesity and Weight Management for the Prevention and Treatment of Diabetes: Standards of Care in Diabetes-2026,American Diabetes Association,2026,risk_factors,41358882,10.2337/dc26-S008,
+ADA_2025_PREVENTION,Prevention or Delay of Diabetes and Associated Comorbidities: Standards of Care in Diabetes-2025,American Diabetes Association,2025,risk_factors,39651971,10.2337/dc25-S003,
+ADA_2025_OBESITY,Obesity and Weight Management for the Prevention and Treatment of Type 2 Diabetes: Standards of Care in Diabetes-2025,American Diabetes Association,2025,lifestyle,39651976,10.2337/dc25-S008,
+USPSTF_2021_SCREENING,Screening for Prediabetes and Type 2 Diabetes: US Preventive Services Task Force Recommendation Statement,United States Preventive Services Task Force,2021,clinical_guidelines,34427594,10.1001/jama.2021.12531,
+ADA_2025_COMPREHENSIVE,Comprehensive Medical Evaluation and Assessment of Comorbidities: Standards of Care in Diabetes-2025,American Diabetes Association,2025,clinical_guidelines,39651988,10.2337/dc25-S004,
+T2D_DIAGNOSIS_REVIEW_2026,Diabetes mellitus-definition classification diagnosis screening and prevention Update 2026,Diabetes Care/Clinical Review,2026,biomarkers,42162460,10.1007/s00508-025-02627-2,
