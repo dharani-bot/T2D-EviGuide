@@ -1,6 +1,6 @@
 import os
-import re
 import chromadb
+from sentence_transformers import SentenceTransformer
 
 
 # ============================================================
@@ -14,19 +14,36 @@ VECTOR_DB_DIR = os.path.join(
 
 COLLECTION_NAME = "t2d_evidence"
 
+MODEL_NAME = (
+    "sentence-transformers/all-MiniLM-L6-v2"
+)
+
 
 # ============================================================
-# QUERY TERM EXTRACTION
+# LOAD EMBEDDING MODEL
+# ============================================================
+
+print("Loading embedding model...")
+
+embedding_model = SentenceTransformer(
+    MODEL_NAME
+)
+
+print("Embedding model loaded successfully.")
+
+
+# ============================================================
+# CLINICAL QUERY TERM EXTRACTION
 # ============================================================
 
 def extract_query_terms(query):
+
     query = query.lower()
 
     terms = [
         "hba1c",
-        "fasting",
+        "fasting glucose",
         "glucose",
-        "blood glucose",
         "prediabetes",
         "diabetes",
         "diagnosis",
@@ -42,64 +59,69 @@ def extract_query_terms(query):
         "screening",
         "obesity",
         "bmi",
+        "body weight",
+        "physical activity",
         "lifestyle",
+        "family history",
+        "hypertension",
+        "blood pressure",
         "medication",
+        "drug interaction",
         "drug",
         "kidney",
         "ckd",
+        "biomarker",
+        "biomarkers",
+        "insulin resistance",
+        "beta cell",
+        "c-peptide",
+        "fasting insulin",
+        "homa-ir",
+        "lipid",
+        "cholesterol",
     ]
 
-    return [term for term in terms if term in query]
+    return [
+        term
+        for term in terms
+        if term in query
+    ]
 
 
 # ============================================================
 # LEXICAL RELEVANCE
 # ============================================================
 
-def lexical_relevance(document, query_terms):
+def lexical_relevance(
+    document,
+    query_terms
+):
+
     text = document.lower()
 
     score = 0.0
 
     for term in query_terms:
 
-        # Exact phrase match
         if term in text:
+
             score += 1.0
 
-        # Extra weight for important clinical concepts
-        if term in {
-            "hba1c",
-            "glucose",
-            "fasting",
-            "prediabetes",
-            "diabetes",
-            "diagnostic",
-            "threshold",
-            "criteria",
-            "screening",
-        }:
-            if term in text:
+            if term in {
+                "hba1c",
+                "fasting glucose",
+                "glucose",
+                "prediabetes",
+                "diabetes",
+                "diagnostic",
+                "threshold",
+                "criteria",
+                "screening",
+                "biomarker",
+                "biomarkers",
+            }:
+
                 score += 1.0
-
-    # Bonus when diagnostic concepts occur with biomarkers
-    has_biomarker = any(
-        x in text
-        for x in ["hba1c", "glucose", "fasting"]
-    )
-
-    has_diagnostic = any(
-        x in text
-        for x in [
-            "diagnos",
-            "threshold",
-            "criteria",
-            "prediabetes",
-        ]
-    )
-
-    if has_biomarker and has_diagnostic:
-        score += 2.0
 
     return score
 
@@ -111,8 +133,13 @@ def lexical_relevance(document, query_terms):
 def search_evidence(
     query,
     top_k=5,
-    max_distance=1.15
+    candidate_k=20,
+    max_distance=1.20
 ):
+
+    # --------------------------------------------------------
+    # Connect to ChromaDB
+    # --------------------------------------------------------
 
     client = chromadb.PersistentClient(
         path=VECTOR_DB_DIR
@@ -122,65 +149,158 @@ def search_evidence(
         name=COLLECTION_NAME
     )
 
-    # Retrieve stored documents and metadata.
-    # No sentence-transformers, sklearn or scipy required.
-    data = collection.get(
+    # --------------------------------------------------------
+    # Create query embedding
+    # --------------------------------------------------------
+
+    query_embedding = (
+        embedding_model.encode_query(
+            query,
+            convert_to_numpy=True
+        )
+    )
+
+    # --------------------------------------------------------
+    # Semantic vector search
+    # --------------------------------------------------------
+
+    results = collection.query(
+        query_embeddings=[
+            query_embedding.tolist()
+        ],
+        n_results=candidate_k,
         include=[
             "documents",
-            "metadatas"
+            "metadatas",
+            "distances"
         ]
     )
 
-    documents = data.get("documents", [])
-    metadatas = data.get("metadatas", [])
+    documents = results.get(
+        "documents",
+        [[]]
+    )[0]
+
+    metadatas = results.get(
+        "metadatas",
+        [[]]
+    )[0]
+
+    distances = results.get(
+        "distances",
+        [[]]
+    )[0]
 
     if not documents:
         return []
 
-    query_terms = extract_query_terms(query)
+    # --------------------------------------------------------
+    # Extract important terms from query
+    # --------------------------------------------------------
+
+    query_terms = extract_query_terms(
+        query
+    )
 
     candidates = []
 
-    for document, metadata in zip(
+    # --------------------------------------------------------
+    # Combine semantic + lexical relevance
+    # --------------------------------------------------------
+
+    for document, metadata, distance in zip(
         documents,
-        metadatas
+        metadatas,
+        distances
     ):
 
         if not document:
             continue
 
-        score = lexical_relevance(
+        metadata = metadata or {}
+
+        lexical_score = lexical_relevance(
             document,
             query_terms
         )
 
-        if score <= 0:
-            continue
+        # Convert semantic distance into a similarity-like
+        # score where higher is better.
+        semantic_score = max(
+            0.0,
+            1.0 - float(distance)
+        )
 
-        candidates.append({
-            "document": document,
-            "metadata": metadata or {},
-            "distance": max(
-                0.0,
-                1.0 - min(score / 10.0, 1.0)
-            ),
-            "lexical_score": score,
-            "combined_score": -score,
-        })
+        # Small lexical boost helps prioritize documents
+        # containing important clinical concepts.
+        combined_score = (
+            semantic_score
+            + (0.05 * lexical_score)
+        )
 
-    # Highest lexical score first
+        candidates.append(
+            {
+                "document": document,
+
+                "metadata": metadata,
+
+                "distance": float(
+                    distance
+                ),
+
+                "semantic_score": (
+                    semantic_score
+                ),
+
+                "lexical_score": (
+                    lexical_score
+                ),
+
+                "combined_score": (
+                    combined_score
+                ),
+            }
+        )
+
+    # --------------------------------------------------------
+    # Remove very distant results
+    # --------------------------------------------------------
+
+    filtered_candidates = [
+        candidate
+        for candidate in candidates
+        if candidate["distance"]
+        <= max_distance
+    ]
+
+    # If filtering removes everything, keep the semantic
+    # candidates rather than returning no evidence.
+    if filtered_candidates:
+
+        candidates = filtered_candidates
+
+    # --------------------------------------------------------
+    # Highest combined relevance first
+    # --------------------------------------------------------
+
     candidates.sort(
-        key=lambda x: x["lexical_score"],
+        key=lambda x: x["combined_score"],
         reverse=True
     )
 
+    # --------------------------------------------------------
     # Prefer different articles
+    # --------------------------------------------------------
+
     selected = []
+
     seen_articles = set()
 
     for candidate in candidates:
 
-        article_id = candidate["metadata"].get(
+        article_id = candidate[
+            "metadata"
+        ].get(
             "article_id",
             ""
         )
@@ -188,18 +308,26 @@ def search_evidence(
         if article_id in seen_articles:
             continue
 
-        selected.append(candidate)
-        seen_articles.add(article_id)
+        selected.append(
+            candidate
+        )
+
+        seen_articles.add(
+            article_id
+        )
 
         if len(selected) >= top_k:
             break
 
-    # Fill remaining slots if necessary
+    # --------------------------------------------------------
+    # Fill remaining slots if needed
+    # --------------------------------------------------------
+
     if len(selected) < top_k:
 
         selected_ids = {
-            id(x)
-            for x in selected
+            id(candidate)
+            for candidate in selected
         }
 
         for candidate in candidates:
@@ -207,7 +335,9 @@ def search_evidence(
             if id(candidate) in selected_ids:
                 continue
 
-            selected.append(candidate)
+            selected.append(
+                candidate
+            )
 
             if len(selected) >= top_k:
                 break
@@ -219,38 +349,75 @@ def search_evidence(
 # PRINT RESULTS
 # ============================================================
 
-def print_search_results(query, results):
+def print_search_results(
+    query,
+    results
+):
 
     print()
-    print("=" * 70)
-    print("T2D-EviGuide Evidence Retrieval")
-    print("=" * 70)
+
+    print(
+        "=" * 70
+    )
+
+    print(
+        "T2D-EviGuide Semantic Evidence Retrieval"
+    )
+
+    print(
+        "=" * 70
+    )
 
     print()
-    print("Clinical Query:")
-    print(query)
+
+    print(
+        "Clinical Query:"
+    )
+
+    print(
+        query
+    )
 
     print()
 
     if not results:
-        print("No relevant evidence retrieved.")
+
+        print(
+            "No relevant evidence retrieved."
+        )
+
         return
 
     print(
-        f"Retrieved evidence chunks: {len(results)}"
+        f"Retrieved evidence chunks: "
+        f"{len(results)}"
     )
 
-    for index, result in enumerate(results):
+    for index, result in enumerate(
+        results
+    ):
 
-        metadata = result["metadata"]
+        metadata = result[
+            "metadata"
+        ]
 
         print()
-        print("-" * 70)
-        print(f"RESULT {index + 1}")
-        print("-" * 70)
 
         print(
-            f"Title: {metadata.get('title', '')}"
+            "-" * 70
+        )
+
+        print(
+            f"RESULT {index + 1}"
+        )
+
+        print(
+            "-" * 70
+        )
+
+        print(
+            f"Title: "
+            f"{metadata.get('title', '')}"
         )
 
         print(
@@ -259,7 +426,8 @@ def print_search_results(query, results):
         )
 
         print(
-            f"Source: {metadata.get('source', '')}"
+            f"Source: "
+            f"{metadata.get('source', '')}"
         )
 
         print(
@@ -268,33 +436,34 @@ def print_search_results(query, results):
         )
 
         print(
+            f"Semantic Distance: "
+            f"{result['distance']:.4f}"
+        )
+
+        print(
+            f"Semantic Score: "
+            f"{result['semantic_score']:.4f}"
+        )
+
+        print(
             f"Lexical Score: "
             f"{result['lexical_score']:.2f}"
         )
 
+        print(
+            f"Combined Score: "
+            f"{result['combined_score']:.4f}"
+        )
+
         print()
-        print("Evidence:")
-        print(result["document"])
+
+        print(
+            "Evidence:"
+        )
+
+        print(
+            result["document"]
+        )
 
 
-# ============================================================
 # TEST
-# ============================================================
-
-if __name__ == "__main__":
-
-    query = (
-        "What are the diagnostic thresholds "
-        "for fasting blood glucose and HbA1c "
-        "for diabetes and prediabetes?"
-    )
-
-    results = search_evidence(
-        query,
-        top_k=5
-    )
-
-    print_search_results(
-        query,
-        results
-    )
