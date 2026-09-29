@@ -60,3 +60,5 @@ Thumbs.db
 *.log
 *.tmp
 *.bak
+# Local backup - do not upload
+T2D-EviGuide-BACKUP/
