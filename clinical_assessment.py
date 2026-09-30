@@ -9,36 +9,100 @@ from llm_client import ask_llm
 def build_patient_summary(patient_data):
 
     summary = f"""
-Patient information:
+PATIENT & DEMOGRAPHIC INFORMATION
 
 Age: {patient_data.get('age')}
 Sex: {patient_data.get('sex')}
+Marital status: {patient_data.get('marital_status')}
+Occupation: {patient_data.get('occupation')}
+Nature of work: {patient_data.get('work_activity')}
+Residence: {patient_data.get('residence')}
+
+Family history of diabetes: {patient_data.get('family_history')}
+Family history of cardiovascular disease: {patient_data.get('family_history_cvd')}
+Previous prediabetes: {patient_data.get('previous_prediabetes')}
+Gestational diabetes history: {patient_data.get('gestational_diabetes')}
+
+
+ANTHROPOMETRIC MEASUREMENTS
 
 Weight: {patient_data.get('weight')} kg
 Height: {patient_data.get('height')} cm
 BMI: {patient_data.get('bmi')} kg/m²
+Waist circumference: {patient_data.get('waist_circumference')} cm
+
+
+LABORATORY MEASUREMENTS
 
 Fasting blood glucose: {patient_data.get('fasting_glucose')} mg/dL
 HbA1c: {patient_data.get('hba1c')} %
 
-Blood pressure:
-- Systolic: {patient_data.get('systolic_bp')} mmHg
-- Diastolic: {patient_data.get('diastolic_bp')} mmHg
+Total cholesterol: {patient_data.get('total_cholesterol')} mg/dL
+HDL cholesterol: {patient_data.get('hdl')} mg/dL
+LDL cholesterol: {patient_data.get('ldl')} mg/dL
+Triglycerides: {patient_data.get('triglycerides')} mg/dL
 
-Family history of diabetes:
-{patient_data.get('family_history')}
 
-Physical activity:
-{patient_data.get('physical_activity')}
+VITAL SIGNS
 
-Smoking:
-{patient_data.get('smoking')}
+Systolic blood pressure: {patient_data.get('systolic_bp')} mmHg
+Diastolic blood pressure: {patient_data.get('diastolic_bp')} mmHg
 
-Medical history:
+
+PHYSICAL ACTIVITY & LIFESTYLE
+
+Physical activity frequency: {patient_data.get('physical_activity')}
+Activity duration per session: {patient_data.get('activity_duration')} minutes
+Sedentary time: {patient_data.get('sedentary_hours')} hours/day
+Sleep duration: {patient_data.get('sleep_duration')} hours/day
+
+Smoking: {patient_data.get('smoking')}
+Alcohol consumption: {patient_data.get('alcohol')}
+
+
+DIETARY INFORMATION
+
+Fruit and vegetable intake: {patient_data.get('fruit_vegetable_intake')}
+Whole grain intake: {patient_data.get('whole_grain_intake')}
+Sugary beverage consumption: {patient_data.get('sugary_drinks')}
+Sweets/added sugar consumption: {patient_data.get('sweets_added_sugar')}
+Fried/high-fat food consumption: {patient_data.get('fried_food')}
+Processed/packaged food consumption: {patient_data.get('processed_food')}
+
+Additional dietary information:
+{patient_data.get('dietary_notes')}
+
+
+MEDICAL HISTORY
+
+Hypertension: {patient_data.get('hypertension')}
+Dyslipidemia: {patient_data.get('dyslipidemia')}
+Cardiovascular disease: {patient_data.get('cardiovascular_disease')}
+Kidney disease: {patient_data.get('kidney_disease')}
+Liver disease: {patient_data.get('liver_disease')}
+PCOS: {patient_data.get('pcos')}
+
+Other medical history:
 {patient_data.get('medical_history')}
+
+
+MEDICATION INFORMATION
 
 Current medications:
 {patient_data.get('medications')}
+
+Recently added medication: {patient_data.get('recent_medication_added')}
+New medication details:
+{patient_data.get('new_medication')}
+
+
+ADDITIONAL CLINICAL INFORMATION
+
+Additional clinical notes:
+{patient_data.get('additional_notes')}
+
+Uploaded clinical reports:
+{patient_data.get('uploaded_reports')}
 """
 
     return summary.strip()
@@ -48,194 +112,153 @@ Current medications:
 # CLINICAL QUESTION
 # ============================================================
 
-def create_clinical_question(patient_data):
-
-    age = patient_data.get("age")
-    bmi = patient_data.get("bmi")
-    glucose = patient_data.get("fasting_glucose")
-    hba1c = patient_data.get("hba1c")
-    family_history = patient_data.get("family_history")
-    activity = patient_data.get("physical_activity")
-    medical_history = patient_data.get("medical_history")
-
-    question = f"""
-Type 2 Diabetes early risk assessment for a {age}-year-old
-patient with BMI {bmi} kg/m², fasting blood glucose
-{glucose} mg/dL, HbA1c {hba1c}%, family history
-{family_history}, physical activity level {activity},
-and medical history including {medical_history}.
-
-Retrieve evidence addressing:
-
-1. Diagnostic and prediabetes interpretation of fasting
-   blood glucose and HbA1c.
-
-2. Established risk factors for Type 2 Diabetes.
-
-3. The relationship between physical activity and Type 2
-   Diabetes risk.
-
-4. The relationship between hypertension and Type 2 Diabetes
-   risk.
-
-5. The relevance of BMI and body weight to Type 2 Diabetes
-   risk.
-
-6. Evidence-based screening or early risk assessment
-   considerations.
-
-Prefer evidence directly relevant to Type 2 Diabetes risk
-assessment and screening.
-
-Avoid unrelated disease-specific evidence unless it directly
-contributes to the assessment.
-"""
-
-    return question.strip()
-
-
-# ============================================================
-# FORMAT EVIDENCE FOR LLM
-# ============================================================
-
 def format_evidence_for_llm(evidence):
+    """
+    Convert retrieved evidence into a structured text format
+    that can be supplied to the LLM.
+    """
 
-    evidence_text = ""
+    if not evidence:
+        return "No evidence was retrieved."
+
+    formatted = []
 
     for item in evidence:
 
-        evidence_text += f"""
-Evidence {item['evidence_number']}
+        evidence_number = item.get(
+            "evidence_number",
+            "N/A"
+        )
 
-Stable Evidence ID:
-{item['article_id']}
+        article_id = item.get(
+            "article_id",
+            "N/A"
+        )
 
-Title:
-{item['title']}
+        title = item.get(
+            "title",
+            "N/A"
+        )
 
-Source:
-{item['source']}
+        source = item.get(
+            "source",
+            "N/A"
+        )
 
-Year:
-{item['year']}
+        text = item.get(
+            "text",
+            item.get(
+                "document",
+                ""
+            )
+        )
 
-Category:
-{item['category']}
+        formatted.append(
+            f"""
+[Evidence {evidence_number} | {article_id}]
 
-PMID:
-{item['pmid']}
+Title: {title}
 
-DOI:
-{item['doi']}
+Source: {source}
 
-PMC ID:
-{item.get('pmc_id', '')}
-
-Evidence Type:
-{item.get('section', '')}
-
-Retrieved Evidence:
-{item['text']}
-
-------------------------------------------------------------
+Evidence:
+{text}
 """
+        )
 
-    return evidence_text
+    return "\n".join(formatted)
+def create_clinical_question(patient_data):
+    """
+    Create an evidence-retrieval question from the patient's
+    multimodal clinical information.
 
+    The question is used by the RAG system to retrieve
+    relevant Type 2 Diabetes evidence from the literature.
+    """
 
-# ============================================================
-# GENERATE RISK ASSESSMENT
-# ============================================================
+    return """
+Assess the patient's early risk indicators for Type 2 Diabetes
+using the available multimodal clinical information.
 
-def generate_risk_assessment(
-    patient_data,
-    top_k=3
-):
+Focus the evidence retrieval on:
 
-    # --------------------------------------------------------
-    # Build patient summary
-    # --------------------------------------------------------
+1. Interpretation of fasting blood glucose and HbA1c
+   when supported by the retrieved literature.
 
-    patient_summary = build_patient_summary(
-        patient_data
-    )
+2. Established risk factors for Type 2 Diabetes.
 
-    # --------------------------------------------------------
-    # Build clinical question
-    # --------------------------------------------------------
+3. Body weight, BMI, and waist circumference.
 
-    clinical_question = create_clinical_question(
-        patient_data
-    )
+4. Physical activity and sedentary behaviour.
 
-    # --------------------------------------------------------
-    # Retrieve medical evidence
-    # --------------------------------------------------------
+5. Dietary factors including sugary beverages,
+   added sugars, whole grains, fruits and vegetables,
+   fried/high-fat foods, and processed/packaged foods.
+
+6. Blood pressure and lipid-related cardiovascular
+   risk factors.
+
+7. Family history of diabetes and relevant medical history.
+
+8. Previous prediabetes or gestational diabetes when provided.
+
+9. Appropriate screening and early risk-assessment considerations.
+
+Use evidence directly relevant to Type 2 Diabetes.
+Avoid unrelated disease-specific evidence.
+
+The goal is to support an evidence-grounded clinical
+decision-support assessment, not to independently diagnose
+the patient.
+"""
+def generate_risk_assessment(patient_data, top_k=3):
+
+    patient_summary = build_patient_summary(patient_data)
+
+    clinical_question = create_clinical_question(patient_data)
 
     evidence = build_evidence_package(
         clinical_question,
         top_k=top_k
     )
 
-    # --------------------------------------------------------
-    # No evidence
-    # --------------------------------------------------------
-
     if not evidence:
-
         return {
             "success": False,
-
             "assessment": (
-                "The retrieved evidence is insufficient "
-                "to support an early Type 2 Diabetes "
-                "risk assessment."
+                "Insufficient relevant evidence was retrieved "
+                "for this assessment."
             ),
-
             "evidence": [],
-
             "patient_summary": patient_summary,
-
-            "clinical_question": clinical_question
+            "clinical_question": clinical_question,
         }
 
-    # --------------------------------------------------------
-    # Format evidence for LLM
-    # --------------------------------------------------------
-
-    evidence_text = format_evidence_for_llm(
-        evidence
-    )
-
-    # ========================================================
-    # LLM PROMPT
-    # ========================================================
+    evidence_text = format_evidence_for_llm(evidence)
 
     llm_question = f"""
-Assess the following patient's early Type 2 Diabetes risk
-indicators using ONLY the retrieved medical evidence.
+You are supporting a healthcare research prototype called
+T2D-EviGuide.
 
-============================================================
+The system is performing an evidence-grounded early risk
+assessment for Type 2 Diabetes.
+
 PATIENT INFORMATION
-============================================================
 
 {patient_summary}
 
+CLINICAL QUESTION
 
-============================================================
-RETRIEVED MEDICAL EVIDENCE
-============================================================
+{clinical_question}
+
+RETRIEVED EVIDENCE
 
 {evidence_text}
 
+Prepare an evidence-grounded clinical assessment using ONLY
+the patient information and retrieved evidence provided above.
 
-============================================================
-TASK
-============================================================
-
-Produce an evidence-grounded clinical interpretation.
-
-Use exactly these sections:
+Use the following sections:
 
 1. Overall Risk Assessment
 2. Key Risk Indicators
@@ -245,333 +268,50 @@ Use exactly these sections:
 6. Evidence-Based Interpretation
 7. Important Limitations
 
+Rules:
 
-============================================================
-CITATION FORMAT
-============================================================
-
-Every important clinical interpretation must include a
-stable evidence citation.
-
-Use this format:
+- Do not diagnose the patient.
+- Do not provide a numerical probability.
+- Do not prescribe medications.
+- Do not recommend medication changes or dosages.
+- Do not introduce medical facts that are not supported by
+  the retrieved evidence.
+- Clearly distinguish patient-reported measurements from
+  evidence-based interpretation.
+- Mention missing or uncertain information.
+- Cite supporting information using the format:
 
 [Evidence N | ARTICLE_ID]
 
-For example:
-
-[Evidence 1 | T2D_DIAGNOSIS_REVIEW_2026]
-
-Do NOT change the ARTICLE_ID.
-
-Do NOT invent an ARTICLE_ID.
-
-If a statement is supported by more than one source, cite
-each relevant source.
-
-Example:
-
-[Evidence 1 | T2D_DIAGNOSIS_REVIEW_2026]
-[Evidence 2 | USPSTF_2021_SCREENING]
-
-
-============================================================
-STRICT EVIDENCE RULES
-============================================================
-
-1. Use ONLY information explicitly supported by the retrieved
-   evidence.
-
-2. Patient values themselves may be reported directly from
-   the patient data.
-
-3. Clinical interpretation of a patient value must be
-   supported by retrieved evidence.
-
-4. Do NOT infer a clinical threshold if the retrieved evidence
-   does not explicitly provide that threshold.
-
-5. Do NOT classify fasting glucose or HbA1c unless the
-   retrieved evidence explicitly supports that classification.
-
-6. Do NOT call a factor a risk factor merely because an
-   article mentions it as a comorbidity.
-
-7. Do NOT call something protective unless the retrieved
-   evidence explicitly supports that interpretation.
-
-8. Do NOT assume that a guideline applies to this patient
-   unless the patient's characteristics satisfy the criteria
-   stated in the retrieved evidence.
-
-9. If a claim cannot be supported by the retrieved evidence,
-   write:
-
-   "The retrieved evidence does not establish this."
-
-10. Do NOT use outside medical knowledge.
-
-11. Do NOT provide a numerical probability of developing
-    Type 2 Diabetes.
-
-12. Do NOT diagnose the patient.
-
-13. Do NOT prescribe medication.
-
-14. Do NOT recommend starting, stopping, or changing medication.
-
-15. Do NOT provide medication dosage instructions.
-
-16. Do not treat the absence of a statement in an article as
-    positive evidence.
-
-17. Clearly separate:
-
-    - Patient data
-    - Evidence-supported interpretation
-    - Missing information
-    - Uncertainty
-
-18. Do not describe an observation as a protective factor
-    unless the retrieved evidence explicitly supports that
-    interpretation.
-
-19. Do not claim that the patient is at high, moderate, or low
-    risk unless the retrieved evidence provides a basis for
-    that classification.
-
-20. If evidence is incomplete, acknowledge the limitation
-    rather than filling the gap with general medical knowledge.
-
-21. If an article is only indirectly relevant, do not use it
-    as the primary support for a clinical conclusion.
-
-22. Never cite an evidence number or article ID that does not
-    exist in the supplied evidence.
-
-
-============================================================
-IMPORTANT
-============================================================
-
-The goal is evidence-grounded early risk assessment.
-
-This is NOT autonomous diagnosis.
-
-The system should support clinician review by showing:
-
-- what the patient data are,
-- what the literature supports,
-- what remains uncertain,
-- and which source supports each interpretation.
-
-If the retrieved evidence is insufficient to interpret a
-clinical value, explicitly say so.
+- Use only the retrieved evidence supplied above.
+- Do not invent article IDs or citations.
+- If the evidence is insufficient for a conclusion, state that
+  clearly.
 """
-
-    # ========================================================
-    # CALL LLM
-    # ========================================================
 
     try:
 
-        assessment = ask_llm(
+        answer = ask_llm(
             llm_question,
             evidence
         )
 
-    except Exception as error:
+        return {
+            "success": True,
+            "assessment": answer,
+            "evidence": evidence,
+            "patient_summary": patient_summary,
+            "clinical_question": clinical_question,
+        }
+
+    except Exception as e:
 
         return {
             "success": False,
-
             "assessment": (
-                f"Unable to generate the LLM assessment: "
-                f"{error}"
+                f"The AI assessment could not be generated: {e}"
             ),
-
-            # IMPORTANT:
-            # Keep retrieved evidence even when
-            # the LLM call fails.
-
             "evidence": evidence,
-
             "patient_summary": patient_summary,
-
-            "clinical_question": clinical_question
+            "clinical_question": clinical_question,
         }
-
-    # ========================================================
-    # RETURN STRUCTURED RESULT
-    # ========================================================
-
-    return {
-        "success": True,
-
-        "assessment": assessment,
-
-        # IMPORTANT:
-        # The Streamlit application needs this.
-        "evidence": evidence,
-
-        "patient_summary": patient_summary,
-
-        "clinical_question": clinical_question
-    }
-
-
-# ============================================================
-# LOCAL TEST
-# ============================================================
-
-if __name__ == "__main__":
-
-    test_patient = {
-
-        "age": 45,
-
-        "sex": "Female",
-
-        "weight": 62,
-
-        "height": 160,
-
-        "bmi": 24.2,
-
-        "fasting_glucose": 100,
-
-        "hba1c": 5.7,
-
-        "systolic_bp": 120,
-
-        "diastolic_bp": 80,
-
-        "family_history": "No",
-
-        "physical_activity": "Low",
-
-        "smoking": "Never",
-
-        "medical_history": "Hypertension",
-
-        "medications": "No medications"
-    }
-
-    print()
-    print("=" * 60)
-    print("T2D-EviGuide Clinical Assessment")
-    print("=" * 60)
-    print()
-
-    result = generate_risk_assessment(
-        test_patient,
-        top_k=3
-    )
-
-    if result["success"]:
-
-        print("===== ASSESSMENT =====")
-        print()
-
-        print(
-            result["assessment"]
-        )
-
-        print()
-        print("=" * 60)
-        print("===== SUPPORTING EVIDENCE =====")
-        print("=" * 60)
-        print()
-
-        for item in result["evidence"]:
-
-            print(
-                f"Evidence {item['evidence_number']}: "
-                f"{item['title']}"
-            )
-
-            print(
-                f"Article ID: "
-                f"{item['article_id']}"
-            )
-
-            print(
-                f"Source: "
-                f"{item['source']}"
-            )
-
-            print(
-                f"Year: "
-                f"{item['year']}"
-            )
-
-            print(
-                f"Category: "
-                f"{item['category']}"
-            )
-
-            print(
-                f"PMID: "
-                f"{item['pmid']}"
-            )
-
-            print(
-                f"DOI: "
-                f"{item['doi']}"
-            )
-
-            print(
-                f"PMC ID: "
-                f"{item.get('pmc_id', '')}"
-            )
-
-            print(
-                f"Evidence Type: "
-                f"{item.get('section', '')}"
-            )
-
-            try:
-
-                print(
-                    f"Retrieval distance: "
-                    f"{float(item['distance']):.4f}"
-                )
-
-            except (
-                TypeError,
-                ValueError
-            ):
-
-                print(
-                    f"Retrieval distance: "
-                    f"{item.get('distance')}"
-                )
-
-            print()
-            print("Evidence text:")
-            print(
-                item["text"]
-            )
-
-            print()
-            print("-" * 70)
-            print()
-
-    else:
-
-        print(
-            "===== ASSESSMENT ERROR ====="
-        )
-
-        print()
-
-        print(
-            result["assessment"]
-        )
-
-        if result.get("evidence"):
-
-            print()
-            print(
-                "Retrieved evidence was available, "
-                "but assessment generation failed."
-            )
