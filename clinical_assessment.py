@@ -268,25 +268,100 @@ Use the following sections:
 6. Evidence-Based Interpretation
 7. Important Limitations
 
-Rules:
+IMPORTANT EVIDENCE CITATION RULE:
+
+Every claim that depends on retrieved medical evidence MUST
+include an explicit evidence citation.
+
+The citation MUST use EXACTLY this format:
+
+[Evidence N | ARTICLE_ID]
+
+Examples:
+
+[Evidence 1 | AACE_2026_T2D]
+[Evidence 2 | T2D_DIAGNOSIS_REVIEW_2026]
+[Evidence 3 | USPSTF_2021_SCREENING]
+
+NEVER use:
+[Evidence 1]
+[Evidence 2]
+[Evidence 3]
+
+NEVER omit the ARTICLE_ID.
+NEVER invent an ARTICLE_ID.
+
+Use ONLY evidence numbers and ARTICLE_IDs that appear in the
+RETRIEVED EVIDENCE section.
+
+IMPORTANT PATIENT DATA RULE:
+
+Use ONLY the patient values explicitly present in PATIENT INFORMATION.
+
+Do NOT assume that a condition exists simply because it is a
+common risk factor for Type 2 Diabetes.
+
+Do NOT invent or infer:
+
+- previous prediabetes
+- gestational diabetes
+- hypertension
+- dyslipidemia
+- cardiovascular disease
+- kidney disease
+- liver disease
+- PCOS
+- medication use
+- symptoms
+- laboratory values
+- family-history details
+
+If a condition is not explicitly present in PATIENT INFORMATION,
+do not state that the patient has that condition.
+
+IMPORTANT BMI RULE:
+
+Use the BMI value explicitly provided in PATIENT INFORMATION.
+
+Do NOT recalculate BMI if a calculated BMI is already provided.
+
+Do NOT create a second BMI value.
+
+IMPORTANT EVIDENCE RULE:
+
+Do not use general medical knowledge that is not supported by
+the retrieved evidence.
+
+Patient-specific facts should be labelled as patient data and
+do not require an evidence citation.
+
+Medical interpretation based on retrieved literature MUST use
+the exact evidence citation format.
+
+If evidence is insufficient for a conclusion, state that clearly.
+
+SAFETY RULES:
 
 - Do not diagnose the patient.
 - Do not provide a numerical probability.
 - Do not prescribe medications.
 - Do not recommend medication changes or dosages.
-- Do not introduce medical facts that are not supported by
-  the retrieved evidence.
+- Do not claim that the patient has a disease unless this is
+  explicitly documented in the patient information.
 - Clearly distinguish patient-reported measurements from
   evidence-based interpretation.
 - Mention missing or uncertain information.
-- Cite supporting information using the format:
+- Do not cite evidence that is unrelated to the clinical claim.
+- Do not create citations for unsupported claims.
 
-[Evidence N | ARTICLE_ID]
+Before finishing the assessment, check that:
 
-- Use only the retrieved evidence supplied above.
-- Do not invent article IDs or citations.
-- If the evidence is insufficient for a conclusion, state that
-  clearly.
+1. Every evidence-based medical claim has [Evidence N | ARTICLE_ID].
+2. No citation uses [Evidence N] alone.
+3. Every patient condition mentioned actually appears in
+   PATIENT INFORMATION.
+4. The BMI value is consistent throughout the assessment.
+5. No unsupported medical condition has been added.
 """
 
     try:
