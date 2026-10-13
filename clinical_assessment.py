@@ -1,5 +1,5 @@
-from evidence_package import build_evidence_package
-from llm_client import ask_llm
+﻿from backend.rag_engine import build_evidence_package
+from backend.ai_engine import ask_llm
 
 
 # ============================================================
@@ -28,7 +28,7 @@ ANTHROPOMETRIC MEASUREMENTS
 
 Weight: {patient_data.get('weight')} kg
 Height: {patient_data.get('height')} cm
-BMI: {patient_data.get('bmi')} kg/m²
+BMI: {patient_data.get('bmi')} kg/mÂ²
 Waist circumference: {patient_data.get('waist_circumference')} cm
 
 

@@ -1,7 +1,7 @@
-import os
+﻿import os
 import pandas as pd
 
-from clinical_assessment import generate_risk_assessment
+from backend.clinical_engine import generate_risk_assessment
 
 
 BASE_DIR = os.path.dirname(
@@ -321,3 +321,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

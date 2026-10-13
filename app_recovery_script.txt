@@ -1,0 +1,64 @@
+@'
+from pathlib import Path
+import py_compile
+import shutil
+
+app = Path("app.py")
+
+if not app.exists():
+    print("ERROR: app.py not found. Open the T2D-EviGuide project folder.")
+    raise SystemExit(1)
+
+# Preserve the current file before editing.
+backup = Path("app_before_symbol_fix.py")
+if not backup.exists():
+    shutil.copy2(app, backup)
+
+text = app.read_text(encoding="utf-8")
+
+# Replace corrupted emoji labels with clean, readable English.
+replacements = {
+    "ðŸ©º": "",
+    "ðŸ‘¤": "",
+    "ðŸ“": "",
+    "ðŸ§ª": "",
+    "â¤ï¸": "",
+    "ðŸƒ": "",
+    "ðŸŽ": "",
+    "ðŸ¥": "",
+    "ðŸ“„": "",
+    "ðŸ“Ž": "",
+    "ðŸ“": "",
+    "ðŸ“‹": "",
+    "âœ…": "",
+    "ðŸ¤–": "",
+    "ðŸ”¬": "",
+    "ðŸ“Š": "",
+    "ðŸ“š": "",
+    "ðŸ”Ž": "",
+    "âš ï¸": "WARNING:",
+    "âŒ": "ERROR:",
+    "â€”": "-",
+    "â€“": "-",
+    "â€¢": "-",
+    "Â²": "2",
+    "â‰¥": ">=",
+    "â‰¤": "<=",
+}
+
+for bad, good in replacements.items():
+    text = text.replace(bad, good)
+
+app.write_text(text, encoding="utf-8", newline="")
+
+try:
+    py_compile.compile(str(app), doraise=True)
+except py_compile.PyCompileError as exc:
+    print("Syntax check failed:", exc)
+    print("Backup preserved at:", backup.resolve())
+    raise SystemExit(1)
+
+print("SUCCESS: Corrupted display strings replaced.")
+print("SUCCESS: app.py syntax is valid.")
+print("Backup:", backup.resolve())
+'@ | .\.venv\Scripts\python.exe -
