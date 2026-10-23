@@ -12,7 +12,7 @@ from evidence_verifier import verify_assessment
 
 st.set_page_config(
     page_title="T2D-EviGuide",
-    page_icon="🩺",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -308,7 +308,7 @@ st.markdown(
 st.markdown(
     """
     <div class="main-header">
-        <h1>🩺 T2D-EviGuide</h1>
+        <h1> T2D-EviGuide</h1>
         <p>
             AI-Based Early Risk Assessment of Type 2 Diabetes
         </p>
@@ -333,7 +333,7 @@ st.info(
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">👤 1. Patient & Demographic Information</div>',
+    '<div class="section-title"> 1. Patient & Demographic Information</div>',
     unsafe_allow_html=True,
 )
 
@@ -475,7 +475,7 @@ with col4:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">📏 2. Anthropometric Measurements</div>',
+    '<div class="section-title"> 2. Anthropometric Measurements</div>',
     unsafe_allow_html=True,
 )
 
@@ -515,7 +515,7 @@ else:
 
 st.metric(
     "Calculated BMI",
-    f"{calculated_bmi:.1f} kg/m²",
+    f"{calculated_bmi:.1f} kg/mÂ²",
 )
 
 
@@ -524,7 +524,7 @@ st.metric(
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🧪 3. Laboratory Measurements</div>',
+    '<div class="section-title"> 3. Laboratory Measurements</div>',
     unsafe_allow_html=True,
 )
 
@@ -592,7 +592,7 @@ with col2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">❤️ 4. Vital Signs</div>',
+    '<div class="section-title">4. Vital Signs</div>',
     unsafe_allow_html=True,
 )
 
@@ -622,7 +622,7 @@ with col2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🏃 5. Lifestyle & Physical Activity</div>',
+    '<div class="section-title"> 5. Lifestyle & Physical Activity</div>',
     unsafe_allow_html=True,
 )
 
@@ -633,8 +633,8 @@ with col1:
         "Physical Activity Frequency",
         [
             "Daily",
-            "4–6 days/week",
-            "2–3 days/week",
+            "4â€“6 days/week",
+            "2â€“3 days/week",
             "Less than once/week",
             "Never",
             "Unknown",
@@ -698,7 +698,7 @@ with col3:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🍎 6. Dietary & Food Information</div>',
+    '<div class="section-title"> 6. Dietary & Food Information</div>',
     unsafe_allow_html=True,
 )
 
@@ -715,9 +715,9 @@ with col1:
     fruit_vegetable_intake = st.selectbox(
         "Fruit & Vegetable Intake",
         [
-            "≥5 servings/day",
-            "3–4 servings/day",
-            "1–2 servings/day",
+            "â‰¥5 servings/day",
+            "3â€“4 servings/day",
+            "1â€“2 servings/day",
             "Rarely",
             "Unknown",
         ],
@@ -742,8 +742,8 @@ with col3:
         [
             "None",
             "Less than once/week",
-            "1–3 times/week",
-            "4–6 times/week",
+            "1â€“3 times/week",
+            "4â€“6 times/week",
             "Daily",
             "Multiple times/day",
         ],
@@ -757,8 +757,8 @@ with col1:
         [
             "None",
             "Rarely",
-            "1–3 times/week",
-            "4–6 times/week",
+            "1â€“3 times/week",
+            "4â€“6 times/week",
             "Daily",
         ],
     )
@@ -769,8 +769,8 @@ with col2:
         [
             "None",
             "Rarely",
-            "1–3 times/week",
-            "4–6 times/week",
+            "1â€“3 times/week",
+            "4â€“6 times/week",
             "Daily",
         ],
     )
@@ -781,8 +781,8 @@ with col3:
         [
             "None",
             "Rarely",
-            "1–3 times/week",
-            "4–6 times/week",
+            "1â€“3 times/week",
+            "4â€“6 times/week",
             "Daily",
         ],
     )
@@ -798,7 +798,7 @@ dietary_notes = st.text_area(
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🏥 7. Medical History & Medications</div>',
+    '<div class="section-title"> 7. Medical History & Medications</div>',
     unsafe_allow_html=True,
 )
 
@@ -892,7 +892,7 @@ new_medication_details = st.text_area(
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">📄 8. Clinical Document Upload</div>',
+    '<div class="section-title"> 8. Clinical Document Upload</div>',
     unsafe_allow_html=True,
 )
 
@@ -905,7 +905,7 @@ st.markdown(
 )
 
 uploaded_files = st.file_uploader(
-    "📎 Upload Clinical Reports",
+    " Upload Clinical Reports",
     type=[
         "pdf",
         "docx",
@@ -931,7 +931,7 @@ if uploaded_files:
             }
         )
 
-    st.markdown("### 📎 Uploaded Documents")
+    st.markdown("###  Uploaded Documents")
 
     document_rows = []
 
@@ -961,7 +961,7 @@ else:
 # ============================================================
 
 additional_notes = st.text_area(
-    "📝 Additional Clinical Notes",
+    " Additional Clinical Notes",
     placeholder=(
         "Enter any additional clinical information, symptoms, "
         "observations, or questions for the evidence assessment."
@@ -1039,7 +1039,7 @@ patient_data = {
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">📋 Clinical Data Summary</div>',
+    '<div class="section-title"> Clinical Data Summary</div>',
     unsafe_allow_html=True,
 )
 
@@ -1054,7 +1054,7 @@ summary_rows = [
     },
     {
         "Clinical Parameter": "BMI",
-        "Patient Information": f"{calculated_bmi:.1f} kg/m²",
+        "Patient Information": f"{calculated_bmi:.1f} kg/mÂ²",
     },
     {
         "Clinical Parameter": "Fasting glucose",
@@ -1112,7 +1112,7 @@ st.table(summary_rows)
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">✅ 9. Clinical Data Validation</div>',
+    '<div class="section-title">âœ… 9. Clinical Data Validation</div>',
     unsafe_allow_html=True,
 )
 
@@ -1139,7 +1139,7 @@ if validation_result["warnings"]:
     st.warning("### Validation Warnings")
 
     for warning in validation_result["warnings"]:
-        st.write(f"• {warning}")
+        st.write(f"â€¢ {warning}")
 
 
 validated_bmi = validation_result.get(
@@ -1150,7 +1150,7 @@ if validated_bmi is not None:
 
     st.metric(
         "Validated BMI",
-        f"{validated_bmi:.1f} kg/m²",
+        f"{validated_bmi:.1f} kg/mÂ²",
     )
 
 
@@ -1159,12 +1159,12 @@ if validated_bmi is not None:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🤖 10. Evidence-Grounded AI Assessment</div>',
+    '<div class="section-title"> 10. Evidence-Grounded AI Assessment</div>',
     unsafe_allow_html=True,
 )
 
 if st.button(
-    "🔬 Generate Evidence-Grounded AI Assessment",
+    " Generate Evidence-Grounded AI Assessment",
     type="primary",
     use_container_width=True,
 ):
@@ -1197,7 +1197,7 @@ if st.button(
                     )
 
                     st.markdown(
-                        "### 📊 AI Clinical Assessment"
+                        "###  AI Clinical Assessment"
                     )
 
                     st.markdown(
@@ -1219,7 +1219,7 @@ if st.button(
                     )
 
                     st.markdown(
-                        "### 📚 Supporting Medical Evidence"
+                        "###  Supporting Medical Evidence"
                     )
 
                     if evidence:
@@ -1265,7 +1265,7 @@ if st.button(
                         for item in evidence:
 
                             with st.expander(
-                                f"Evidence {item.get('evidence_number')} — "
+                                f"Evidence {item.get('evidence_number')} â€” "
                                 f"{item.get('article_id', 'Unknown')}"
                             ):
 
@@ -1298,7 +1298,7 @@ if st.button(
                     # ====================================================
 
                     st.markdown(
-                        "### 🔎 Evidence Verification"
+                        "###  Evidence Verification"
                     )
 
                     verification = verify_assessment(
@@ -1311,23 +1311,29 @@ if st.button(
                         "UNKNOWN"
                     )
 
+                    col1, col2, col3 = st.columns(3)
+
+                    col1.metric("References Found", verification.get("total_references_found", 0))
+                    col2.metric("Verified", verification.get("total_verified", 0))
+                    col3.metric("Needs Review", verification.get("total_unverified", 0))
+
                     if status == "VERIFIED":
 
                         st.success(
-                            "✅ All explicit evidence references "
+                            "âœ… All explicit evidence references "
                             "matched the retrieved evidence."
                         )
 
                     elif status == "REVIEW REQUIRED":
 
                         st.warning(
-                            "⚠️ Evidence verification requires review."
+                            "âš ï¸ Evidence verification requires review."
                         )
 
                     else:
 
                         st.error(
-                            "❌ Evidence verification failed."
+                            "âŒ Evidence verification failed."
                         )
 
                     verification_table = [
@@ -1405,4 +1411,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
 

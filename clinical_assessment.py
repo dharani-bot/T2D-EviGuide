@@ -1,6 +1,7 @@
-﻿from backend.rag_engine import build_evidence_package
+﻿import re
+from backend.rag_engine import build_evidence_package
 from backend.ai_engine import ask_llm
-
+from clinical_guardrails_v2 import check_clinical_guardrails_v2
 
 # ============================================================
 # PATIENT SUMMARY
@@ -91,7 +92,7 @@ MEDICATION INFORMATION
 Current medications:
 {patient_data.get('medications')}
 
-Recently added medication: {patient_data.get('recent_medication_added')}
+Recently added medication: {patient_data.get('recent_medication')}
 New medication details:
 {patient_data.get('new_medication')}
 

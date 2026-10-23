@@ -2,118 +2,86 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load variables from .env
 load_dotenv()
 
-# OpenRouter configuration
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Free router for initial testing
-MODEL_NAME = "openrouter/free"
+# Use a specific model from your OpenRouter account.
+# You can override this in .env using OPENROUTER_MODEL.
+MODEL_NAME = os.getenv("OPENROUTER_MODEL", "openrouter/free")
 
 
 def ask_llm(question, evidence):
-    """
-    Send a clinical question and retrieved evidence to an LLM.
+    """Generate an evidence-grounded clinical assessment using OpenRouter."""
 
-    The LLM is instructed to:
-    - use only supplied evidence
-    - avoid unsupported medical claims
-    - distinguish risk assessment from diagnosis
-    - avoid medication prescribing/changing instructions
-    - identify the evidence supporting important claims
-    """
-
-    # Check API key
     if not OPENROUTER_API_KEY:
         raise ValueError(
-            "OPENROUTER_API_KEY is not configured. "
-            "Check your .env file."
+            "OPENROUTER_API_KEY is missing. Check your project's .env file."
         )
 
-    # ---------------------------------------------------------
-    # Build evidence context
-    # ---------------------------------------------------------
+    # Prepare retrieved evidence
+    evidence_parts = []
 
-    evidence_text = ""
-
-    for item in evidence:
-        evidence_text += (
-            f"\nEvidence {item['evidence_number']}\n"
-            f"Title: {item['title']}\n"
-            f"Source: {item['source']}\n"
-            f"Year: {item['year']}\n"
-            f"Category: {item['category']}\n"
-            f"PMID: {item['pmid']}\n"
-            f"DOI: {item['doi']}\n"
-            f"Evidence text:\n{item['text']}\n"
-            f"\n"
+    for index, item in enumerate(evidence or [], start=1):
+        evidence_parts.append(
+            f"""
+Evidence {item.get('evidence_number', index)}
+Title: {item.get('title', 'Not provided')}
+Source: {item.get('source', 'Not provided')}
+Year: {item.get('year', 'Not provided')}
+Category: {item.get('category', 'Not provided')}
+PMID: {item.get('pmid', 'Not provided')}
+DOI: {item.get('doi', 'Not provided')}
+Evidence text:
+{item.get('text', '')}
+"""
         )
 
-    # ---------------------------------------------------------
-    # System prompt
-    # ---------------------------------------------------------
+    evidence_text = "\n".join(evidence_parts)
 
     system_prompt = """
-You are an evidence-grounded clinical information assistant
-for an academic healthcare informatics prototype.
-
-Your task is to interpret the supplied clinical question using
-ONLY the retrieved medical evidence provided by the system.
+You are an evidence-grounded clinical information assistant for an
+academic healthcare informatics research prototype.
 
 Rules:
-
-1. Do not invent medical facts.
-2. Do not invent citations, studies, PMIDs, or DOIs.
-3. Do not use medical knowledge that is not supported by the
-   supplied evidence.
-4. If the supplied evidence is insufficient, explicitly state:
-   "The retrieved evidence is insufficient to support this
-   conclusion."
-5. Distinguish early risk assessment from clinical diagnosis.
-6. Do not claim that the patient has diabetes unless the supplied
-   evidence and patient information explicitly support that
-   conclusion.
-7. Do not prescribe medications.
-8. Do not recommend starting, stopping, or changing medication.
-9. Do not provide dosage instructions.
-10. Every important factual clinical claim should reference the
-    relevant evidence number, such as [Evidence 1].
-11. Clearly identify uncertainty or missing information.
-12. Use concise, professional clinical language.
-13. This is a clinical decision-support prototype and does not
-    replace assessment by a qualified healthcare professional.
+1. Use only the supplied patient information and retrieved evidence.
+2. Do not invent clinical facts, diagnoses, references, PMIDs, or DOIs.
+3. Distinguish risk assessment from diagnosis.
+4. Do not claim the patient has a disease unless the supplied information
+   explicitly supports that statement.
+5. Do not prescribe medication or recommend starting, stopping, or changing it.
+6. Do not provide medication dosages.
+7. Cite important evidence-based claims using [Evidence N].
+8. Clearly identify missing information and uncertainty.
+9. If evidence is insufficient, say so explicitly.
+10. Use concise, professional clinical language.
+11. This research prototype is not clinically validated and does not replace
+    assessment by a qualified healthcare professional.
 """
 
-    # ---------------------------------------------------------
-    # User prompt
-    # ---------------------------------------------------------
-
     user_prompt = f"""
-Clinical question:
-
+Clinical question and patient information:
 {question}
 
 Retrieved medical evidence:
-
 {evidence_text}
 
-Using ONLY the retrieved evidence above, provide a concise
-evidence-grounded response.
-
-For each important clinical claim, include the supporting
-evidence number, for example:
-
-[Evidence 1]
-
-If the evidence does not adequately support a conclusion,
-say so explicitly rather than guessing.
+Provide a concise, structured, evidence-grounded assessment.
+Use only the supplied information. Do not invent missing values or diagnoses.
+Cite relevant claims with the evidence numbers provided above.
+If evidence is insufficient, state that clearly.
 """
 
-    # ---------------------------------------------------------
-    # OpenRouter API request
-    # ---------------------------------------------------------
+    payload = {
+        "model": MODEL_NAME,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        "temperature": 0.1,
+        "max_tokens": 1200,
+    }
 
     try:
         response = requests.post(
@@ -122,43 +90,19 @@ say so explicitly rather than guessing.
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json",
             },
-            json={
-                "model": MODEL_NAME,
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": system_prompt,
-                    },
-                    {
-                        "role": "user",
-                        "content": user_prompt,
-                    },
-                ],
-                "temperature": 0.1,
-            },
-            timeout=60,
+            json=payload,
+            timeout=90,
         )
-
     except requests.exceptions.RequestException as error:
         raise RuntimeError(
             f"Could not connect to OpenRouter: {error}"
         ) from error
 
-    # ---------------------------------------------------------
-    # Handle API errors
-    # ---------------------------------------------------------
-
     if not response.ok:
-        print("\n===== OPENROUTER ERROR =====")
-        print("Status code:", response.status_code)
-        print("Response:", response.text)
-        print("============================\n")
-
-        response.raise_for_status()
-
-    # ---------------------------------------------------------
-    # Parse successful response
-    # ---------------------------------------------------------
+        raise RuntimeError(
+            f"OpenRouter API error (HTTP {response.status_code}): "
+            f"{response.text[:1000]}"
+        )
 
     try:
         result = response.json()
@@ -167,23 +111,36 @@ say so explicitly rather than guessing.
             "OpenRouter returned an invalid JSON response."
         ) from error
 
-    # Check that a response was actually returned
-    if "choices" not in result or not result["choices"]:
+    choices = result.get("choices") or []
+    if not choices:
         raise RuntimeError(
-            f"OpenRouter response did not contain a valid choice: "
-            f"{result}"
+            f"OpenRouter returned no choices. Response: {result}"
         )
 
-    message = result["choices"][0].get("message", {})
+    choice = choices[0]
+    message = choice.get("message") or {}
+    content = message.get("content")
 
-    answer = message.get("content")
+    # Some models return content as a list of text blocks.
+    if isinstance(content, list):
+        text_parts = [
+            block.get("text", "")
+            for block in content
+            if isinstance(block, dict) and block.get("type") == "text"
+        ]
+        content = "\n".join(part for part in text_parts if part.strip())
 
-    if not answer:
-        raise RuntimeError(
-            f"OpenRouter returned no text content: {result}"
-        )
+    if isinstance(content, str) and content.strip():
+        return content.strip()
 
-    return answer
-    
-    
+    # Do not treat hidden reasoning as the clinical assessment.
+    finish_reason = choice.get("finish_reason", "unknown")
+    error_details = choice.get("error") or result.get("error")
 
+    raise RuntimeError(
+        "The selected OpenRouter model returned no usable assessment text. "
+        f"Model: {result.get('model', MODEL_NAME)}. "
+        f"Finish reason: {finish_reason}. "
+        f"Details: {error_details or 'No additional error details provided'}. "
+        "Try another available model in your OpenRouter settings."
+    )
