@@ -1,5 +1,5 @@
-
 import streamlit as st
+import matplotlib.pyplot as plt
 
 from clinical_validation import validate_patient_data
 from clinical_assessment import generate_risk_assessment
@@ -12,9 +12,9 @@ from evidence_verifier import verify_assessment
 
 st.set_page_config(
     page_title="T2D-EviGuide",
-    page_icon="",
+    page_icon="🩺",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 
@@ -22,327 +22,294 @@ st.set_page_config(
 # CUSTOM CSS
 # ============================================================
 
-st.markdown(
-    """
-    <style>
+st.markdown("""
+<style>
 
-    /* ========================================================
-       GENERAL APPLICATION
-       ======================================================== */
+/* GLOBAL BACKGROUND AND TEXT */
 
-    .stApp {
-        background-color: #f4f8fc;
-    }
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] {
+    background-color: #F0F5FA !important;
+    color: #172B4D !important;
+}
 
-    .main .block-container {
-        max-width: 1400px;
-        padding-top: 25px;
-        padding-bottom: 40px;
-    }
+html, body, [class*="css"] {
+    color: #172B4D;
+}
 
-    /* ========================================================
-       GENERAL TEXT VISIBILITY
-       ======================================================== */
+[data-testid="stMarkdownContainer"],
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stCaptionContainer"] {
+    color: #263B53 !important;
+}
 
-    .stApp p,
-    .stApp span,
-    .stApp div,
-    .stApp label {
-        color: #16324f;
-    }
+/* MAIN LAYOUT */
 
-    .stMarkdown h1,
-    .stMarkdown h2,
-    .stMarkdown h3,
-    .stMarkdown h4 {
-        color: #123b5d !important;
-    }
+.block-container {
+    max-width: 1450px;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
 
-    /* ========================================================
-       MAIN HEADER
-       ======================================================== */
+/* HEADINGS */
 
-    .main-header {
-        background: linear-gradient(
-            135deg,
-            #0d47a1,
-            #1976d2
-        );
-        padding: 28px;
-        border-radius: 16px;
-        margin-bottom: 25px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.10);
-    }
+h1, h2, h3, h4, h5 {
+    color: #17365D !important;
+    font-weight: 750 !important;
+}
 
-    .main-header h1 {
-        color: white !important;
-        font-size: 32px;
-        margin-bottom: 8px;
-    }
+/* INPUT LABELS */
 
-    .main-header p {
-        color: #eaf4ff !important;
-        font-size: 16px;
-        margin-bottom: 0;
-    }
+label,
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] p {
+    color: #17365D !important;
+    font-weight: 600 !important;
+}
 
-    /* ========================================================
-       SECTION HEADINGS
-       ======================================================== */
+/* INPUT BOXES */
 
-    .section-title {
-        font-size: 21px;
-        font-weight: 700;
-        color: #123b5d !important;
-        background: #eaf4fb;
-        padding: 12px 16px;
-        border-radius: 10px;
-        margin-top: 22px;
-        margin-bottom: 15px;
-        border-left: 5px solid #1565c0;
-    }
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea {
+    background-color: #FFFFFF !important;
+    color: #172B4D !important;
+    -webkit-text-fill-color: #172B4D !important;
+    border: 1px solid #B8C9DC !important;
+}
 
-    .section-subtitle {
-        color: #526575 !important;
-        font-size: 14px;
-        margin-bottom: 15px;
-    }
+input::placeholder,
+textarea::placeholder {
+    color: #64748B !important;
+    -webkit-text-fill-color: #64748B !important;
+    opacity: 1 !important;
+}
 
-    /* ========================================================
-       FORM LABELS
-       ======================================================== */
+/* DROPDOWNS */
 
-    .stSelectbox label,
-    .stNumberInput label,
-    .stTextInput label,
-    .stTextArea label,
-    .stFileUploader label,
-    .stRadio label,
-    .stCheckbox label,
-    .stSlider label {
-        color: #16324f !important;
-        font-weight: 600 !important;
-        opacity: 1 !important;
-    }
+div[data-baseweb="select"] > div {
+    background-color: #FFFFFF !important;
+    color: #172B4D !important;
+    border-color: #B8C9DC !important;
+}
 
-    /* ========================================================
-       SELECT BOXES
-       ======================================================== */
+div[data-baseweb="select"] span {
+    color: #172B4D !important;
+}
 
-    div[data-baseweb="select"] {
-        color: #16324f !important;
-    }
+/* SIDEBAR */
 
-    div[data-baseweb="select"] > div {
-        background-color: #f8fbff !important;
-        border-radius: 8px !important;
-        border: 1px solid #c8d8e8 !important;
-    }
+[data-testid="stSidebar"] {
+    background-color: #E5EDF7 !important;
+}
 
-    div[data-baseweb="select"] span {
-        color: #16324f !important;
-    }
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"],
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #17365D !important;
+}
 
-    /* ========================================================
-       NUMBER / TEXT INPUTS
-       ======================================================== */
+/* SECTION HEADINGS */
 
-    .stNumberInput input,
-    .stTextInput input,
-    .stTextArea textarea {
-        color: #16324f !important;
-        background-color: #f8fbff !important;
-        border-radius: 8px !important;
-    }
+.section-title {
+    background-color: #DCEAF8;
+    color: #17365D !important;
+    padding: 12px 16px;
+    border-left: 5px solid #1976D2;
+    border-radius: 8px;
+    font-size: 19px;
+    font-weight: 750;
+    margin-top: 22px;
+    margin-bottom: 14px;
+}
 
-    input::placeholder,
-    textarea::placeholder {
-        color: #607080 !important;
-        opacity: 1 !important;
-    }
+/* BUTTONS */
 
-    /* ========================================================
-       INPUT HELP TEXT
-       ======================================================== */
+.stButton button {
+    border-radius: 8px;
+    font-weight: 650;
+}
 
-    .stSelectbox small,
-    .stNumberInput small,
-    .stTextInput small,
-    .stTextArea small {
-        color: #526575 !important;
-    }
+/* TABLES */
 
-    /* ========================================================
-       CLINICAL DOCUMENT UPLOAD
-       ======================================================== */
+[data-testid="stDataFrame"],
+[data-testid="stTable"] {
+    background-color: #FFFFFF !important;
+}
 
-    [data-testid="stFileUploader"] {
-        width: 100% !important;
-        min-height: 170px;
-        padding: 16px !important;
-        border: 2px dashed #4f81bd !important;
-        border-radius: 16px !important;
-        background: #f7fbff !important;
-        box-sizing: border-box;
-    }
+/* ALERTS AND INFO BOXES */
 
-    [data-testid="stFileUploader"] section {
-        background: transparent !important;
-        border: none !important;
-        width: 100% !important;
-    }
+[data-testid="stAlert"] {
+    color: #17365D !important;
+}
 
-    [data-testid="stFileUploader"] section > div {
-        width: 100% !important;
-    }
+/* FOOTER */
 
-    [data-testid="stFileUploader"] button {
-        color: #16324f !important;
-        background: white !important;
-        border: 1px solid #4f81bd !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-    }
+.footer {
+    background-color: #DCEAF8;
+    border-top: 3px solid #1976D2;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    color: #17365D !important;
+    font-size: 13px;
+    margin-top: 30px;
+}
+/* REMOVE DARK TOP HEADER */
 
-    [data-testid="stFileUploader"] * {
-        color: #16324f !important;
-    }
+header[data-testid="stHeader"] {
+    background: #F0F5FA !important;
+}
 
-    [data-testid="stFileUploaderFileName"] {
-        color: #16324f !important;
-        font-weight: 600 !important;
-    }
+[data-testid="stToolbar"] {
+    background: transparent !important;
+}
 
-    /* ========================================================
-       METRIC CARDS
-       ======================================================== */
+[data-testid="stDecoration"] {
+    background: #1976D2 !important;
+}
 
-    div[data-testid="stMetric"] {
-        background-color: #ffffff;
-        padding: 14px;
-        border-radius: 12px;
-        border: 1px solid #d9e3ee;
-        box-shadow: 0 2px 7px rgba(0,0,0,0.04);
-    }
+[data-testid="stAppViewContainer"] {
+    background: #F0F5FA !important;
+}
 
-    /* ========================================================
-       TABLES
-       ======================================================== */
+</style>
+""", unsafe_allow_html=True)
 
-    [data-testid="stTable"],
-    .stDataFrame {
-        color: #16324f !important;
-    }
 
-    /* ========================================================
-       BUTTONS
-       ======================================================== */
+# ============================================================
+# LEFT SIDEBAR
+# ============================================================
 
-    .stButton button {
-        border-radius: 9px;
-        font-weight: 600;
-        padding: 8px 18px;
-    }
+uploaded_reports = []
 
-    .stButton button p {
-        color: white !important;
-    }
+with st.sidebar:
 
-    /* ========================================================
-       SUCCESS / WARNING / ERROR
-       ======================================================== */
+    st.title("📁 Clinical Workspace")
 
-    [data-testid="stAlert"] {
-        border-radius: 10px;
-    }
+    st.caption("Patient documents and medication information")
 
-    /* ========================================================
-       AI RESULT BOX
-       ======================================================== */
+    st.markdown("### 📄 Clinical Documents")
 
-    .ai-box {
-        background: #ffffff;
-        border: 1px solid #b9d7ef;
-        border-left: 5px solid #1565c0;
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 15px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    }
+    uploaded_files = st.file_uploader(
+        "Upload reports",
+        type=["pdf", "docx", "txt", "csv", "jpg", "jpeg", "png"],
+        accept_multiple_files=True,
+        key="sidebar_clinical_upload",
+    )
 
-    /* ========================================================
-       EVIDENCE BOX
-       ======================================================== */
+    if uploaded_files:
 
-    .evidence-box {
-        background: #f7fbff;
-        border: 1px solid #c8dff2;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 12px;
-    }
+        for uploaded_file in uploaded_files:
 
-    /* ========================================================
-       FOOTER
-       ======================================================== */
+            uploaded_reports.append({
+                "filename": uploaded_file.name,
+                "file_type": uploaded_file.type,
+                "file_size": uploaded_file.size,
+            })
 
-    .footer {
-        text-align: center;
-        color: #607080 !important;
-        font-size: 13px;
-        margin-top: 35px;
-        padding-top: 15px;
-        border-top: 1px solid #d9e3ee;
-    }
+        st.success(f"{len(uploaded_files)} document(s) added.")
 
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+        for uploaded_file in uploaded_files:
+            st.caption(f"📎 {uploaded_file.name}")
+
+    st.divider()
+
+    st.markdown("### 📝 Clinical Notes")
+
+    clinical_notes = st.text_area(
+        "Patient observations",
+        placeholder=(
+            "Symptoms, clinical observations, "
+            "previous diagnoses..."
+        ),
+        height=100,
+        key="sidebar_clinical_notes",
+        label_visibility="collapsed",
+    )
+
+    st.divider()
+
+    st.markdown("### 💊 Medication Information")
+
+    medications = st.text_area(
+        "Current medications",
+        placeholder="Enter current medicines...",
+        height=75,
+        key="sidebar_current_medications",
+        label_visibility="visible",
+    )
+
+    recent_medication = st.text_area(
+        "Previous medications",
+        placeholder="Enter previously used medicines...",
+        height=75,
+        key="sidebar_previous_medications",
+        label_visibility="visible",
+    )
+
+    st.caption(
+        "Medication information is collected for clinical review. "
+        "This prototype does not independently confirm drug interactions."
+    )
 
 
 # ============================================================
 # HEADER
 # ============================================================
 
-st.markdown(
-    """
-    <div class="main-header">
-        <h1> T2D-EviGuide</h1>
-        <p>
-            AI-Based Early Risk Assessment of Type 2 Diabetes
-        </p>
-        <p>
-            Evidence-grounded clinical decision-support prototype
-            using multimodal clinical data and medical literature.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg, #0D47A1, #1976D2);
+    padding: 28px;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 20px;
+">
+    <h1 style="color:white; margin:0;">
+        🩺 T2D-EviGuide
+    </h1>
+    <h3 style="color:white;">
+        AI-Based Early Risk Assessment of Type 2 Diabetes
+    </h3>
+    <p style="color:white; font-size:16px;">
+        Evidence-grounded clinical decision-support prototype
+        using multimodal clinical data and medical literature.
+    </p>
+    <p style="color:#E3F2FD; font-size:13px;">
+        Research Prototype | Type 2 Diabetes | Agentic AI + RAG + Medical Evidence
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 st.info(
-    "Research prototype: This system provides evidence-grounded "
-    "clinical decision support. It does not provide an autonomous "
-    "diagnosis or replace assessment by a qualified healthcare professional."
+    "Research Prototype | Type 2 Diabetes | "
+    "Agentic AI + Retrieval-Augmented Generation (RAG) + Medical Evidence"
 )
+
+
+# ============================================================
+# SECTION HEADING HELPER
+# ============================================================
+
+def section_heading(title):
+
+    st.markdown(
+        f'<div class="section-title">{title}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 # ============================================================
 # 1. PATIENT & DEMOGRAPHIC INFORMATION
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> 1. Patient & Demographic Information</div>',
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    '<div class="section-subtitle">'
-    'Basic demographic and background information'
-    '</div>',
-    unsafe_allow_html=True,
-)
+section_heading("👤 1. Patient & Demographic Information")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -377,11 +344,7 @@ with col3:
 with col4:
     residence = st.selectbox(
         "Residence",
-        [
-            "Urban",
-            "Rural",
-            "Semi-urban",
-        ],
+        ["Urban", "Rural", "Semi-urban"],
     )
 
 col1, col2, col3, col4 = st.columns(4)
@@ -389,7 +352,7 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     occupation = st.text_input(
         "Occupation",
-        placeholder="e.g. Student, Teacher, IT Professional",
+        placeholder="e.g. Student, Teacher",
     )
 
 with col2:
@@ -407,21 +370,13 @@ with col2:
 with col3:
     family_history = st.selectbox(
         "Family History of Diabetes",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-        ],
+        ["Yes", "No", "Unknown"],
     )
 
 with col4:
     family_history_cvd = st.selectbox(
         "Family History of Cardiovascular Disease",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-        ],
+        ["Yes", "No", "Unknown"],
     )
 
 col1, col2, col3, col4 = st.columns(4)
@@ -429,44 +384,25 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     previous_prediabetes = st.selectbox(
         "Previous Prediabetes",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-        ],
+        ["Yes", "No", "Unknown"],
     )
 
 with col2:
     gestational_diabetes = st.selectbox(
         "History of Gestational Diabetes",
-        [
-            "Yes",
-            "No",
-            "Not applicable",
-            "Unknown",
-        ],
+        ["Yes", "No", "Not applicable", "Unknown"],
     )
 
 with col3:
     pcos_history = st.selectbox(
         "PCOS History",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-            "Not applicable",
-        ],
+        ["Yes", "No", "Unknown", "Not applicable"],
     )
 
 with col4:
     residence_extra = st.selectbox(
         "Healthcare Access",
-        [
-            "Good",
-            "Moderate",
-            "Limited",
-            "Unknown",
-        ],
+        ["Good", "Moderate", "Limited", "Unknown"],
     )
 
 
@@ -474,10 +410,7 @@ with col4:
 # 2. ANTHROPOMETRIC MEASUREMENTS
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> 2. Anthropometric Measurements</div>',
-    unsafe_allow_html=True,
-)
+section_heading("⚖️ 2. Anthropometric Measurements")
 
 col1, col2, col3 = st.columns(3)
 
@@ -508,14 +441,14 @@ with col3:
         step=0.1,
     )
 
-if height > 0:
-    calculated_bmi = weight / ((height / 100) ** 2)
-else:
-    calculated_bmi = 0
+calculated_bmi = round(
+    weight / ((height / 100) ** 2),
+    2,
+)
 
 st.metric(
     "Calculated BMI",
-    f"{calculated_bmi:.1f} kg/mÂ²",
+    f"{calculated_bmi:.1f} kg/m²",
 )
 
 
@@ -523,10 +456,7 @@ st.metric(
 # 3. LABORATORY MEASUREMENTS
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> 3. Laboratory Measurements</div>',
-    unsafe_allow_html=True,
-)
+section_heading("🧪 3. Laboratory Measurements")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -591,10 +521,7 @@ with col2:
 # 4. VITAL SIGNS
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">4. Vital Signs</div>',
-    unsafe_allow_html=True,
-)
+section_heading("❤️ 4. Vital Signs")
 
 col1, col2 = st.columns(2)
 
@@ -621,10 +548,7 @@ with col2:
 # 5. LIFESTYLE & PHYSICAL ACTIVITY
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> 5. Lifestyle & Physical Activity</div>',
-    unsafe_allow_html=True,
-)
+section_heading("🏃 5. Lifestyle & Physical Activity")
 
 col1, col2, col3 = st.columns(3)
 
@@ -633,8 +557,8 @@ with col1:
         "Physical Activity Frequency",
         [
             "Daily",
-            "4â€“6 days/week",
-            "2â€“3 days/week",
+            "4–6 days/week",
+            "2–3 days/week",
             "Less than once/week",
             "Never",
             "Unknown",
@@ -697,17 +621,7 @@ with col3:
 # 6. DIETARY & FOOD INFORMATION
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> 6. Dietary & Food Information</div>',
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    '<div class="section-subtitle">'
-    'Dietary information used as part of the multimodal clinical context'
-    '</div>',
-    unsafe_allow_html=True,
-)
+section_heading("🥗 6. Dietary & Food Information")
 
 col1, col2, col3 = st.columns(3)
 
@@ -715,9 +629,9 @@ with col1:
     fruit_vegetable_intake = st.selectbox(
         "Fruit & Vegetable Intake",
         [
-            "â‰¥5 servings/day",
-            "3â€“4 servings/day",
-            "1â€“2 servings/day",
+            "≥5 servings/day",
+            "3–4 servings/day",
+            "1–2 servings/day",
             "Rarely",
             "Unknown",
         ],
@@ -742,8 +656,8 @@ with col3:
         [
             "None",
             "Less than once/week",
-            "1â€“3 times/week",
-            "4â€“6 times/week",
+            "1–3 times/week",
+            "4–6 times/week",
             "Daily",
             "Multiple times/day",
         ],
@@ -757,8 +671,8 @@ with col1:
         [
             "None",
             "Rarely",
-            "1â€“3 times/week",
-            "4â€“6 times/week",
+            "1–3 times/week",
+            "4–6 times/week",
             "Daily",
         ],
     )
@@ -769,8 +683,8 @@ with col2:
         [
             "None",
             "Rarely",
-            "1â€“3 times/week",
-            "4â€“6 times/week",
+            "1–3 times/week",
+            "4–6 times/week",
             "Daily",
         ],
     )
@@ -781,57 +695,43 @@ with col3:
         [
             "None",
             "Rarely",
-            "1â€“3 times/week",
-            "4â€“6 times/week",
+            "1–3 times/week",
+            "4–6 times/week",
             "Daily",
         ],
     )
 
 dietary_notes = st.text_area(
     "Additional Dietary Notes",
-    placeholder="Optional: meal pattern, special diet, food restrictions, etc.",
+    placeholder="Meal pattern, special diet, food restrictions...",
+    height=75,
 )
 
 
 # ============================================================
-# 7. MEDICAL HISTORY & MEDICATIONS
+# 7. MEDICAL HISTORY
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> 7. Medical History & Medications</div>',
-    unsafe_allow_html=True,
-)
+section_heading("💊 7. Medical History")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
     hypertension = st.selectbox(
         "Hypertension",
-        [
-            "Diagnosed",
-            "Not diagnosed",
-            "Unknown",
-        ],
+        ["Diagnosed", "Not diagnosed", "Unknown"],
     )
 
 with col2:
     dyslipidemia = st.selectbox(
         "Dyslipidemia",
-        [
-            "Diagnosed",
-            "Not diagnosed",
-            "Unknown",
-        ],
+        ["Diagnosed", "Not diagnosed", "Unknown"],
     )
 
 with col3:
     cardiovascular_disease = st.selectbox(
         "Cardiovascular Disease",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-        ],
+        ["Yes", "No", "Unknown"],
     )
 
 col1, col2, col3 = st.columns(3)
@@ -839,133 +739,25 @@ col1, col2, col3 = st.columns(3)
 with col1:
     kidney_disease = st.selectbox(
         "Kidney Disease",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-        ],
+        ["Yes", "No", "Unknown"],
     )
 
 with col2:
     liver_disease = st.selectbox(
         "Liver Disease",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-        ],
+        ["Yes", "No", "Unknown"],
     )
 
 with col3:
     other_conditions = st.selectbox(
         "Other Chronic Conditions",
-        [
-            "Yes",
-            "No",
-            "Unknown",
-        ],
+        ["Yes", "No", "Unknown"],
     )
 
 medical_history = st.text_area(
     "Additional Medical History",
-    placeholder="Enter relevant medical conditions, symptoms, previous diagnoses, etc.",
-)
-
-medications = st.text_area(
-    "Current Medications",
-    placeholder="Enter current medications, supplements, or therapies.",
-)
-
-recent_medication = st.text_input(
-    "Recently Added Medication",
-    placeholder="Optional",
-)
-
-new_medication_details = st.text_area(
-    "New Medication Details",
-    placeholder="Optional: reason for addition, duration, etc.",
-)
-
-
-# ============================================================
-# 8. CLINICAL DOCUMENT UPLOAD
-# ============================================================
-
-st.markdown(
-    '<div class="section-title"> 8. Clinical Document Upload</div>',
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    '<div class="section-subtitle">'
-    'Upload clinical reports, laboratory reports, prescriptions, '
-    'or other supporting documents.'
-    '</div>',
-    unsafe_allow_html=True,
-)
-
-uploaded_files = st.file_uploader(
-    " Upload Clinical Reports",
-    type=[
-        "pdf",
-        "docx",
-        "txt",
-        "jpg",
-        "jpeg",
-    ],
-    accept_multiple_files=True,
-    help="Supported formats: PDF, DOCX, TXT, JPG and JPEG",
-)
-
-uploaded_reports = []
-
-if uploaded_files:
-
-    for uploaded_file in uploaded_files:
-
-        uploaded_reports.append(
-            {
-                "name": uploaded_file.name,
-                "type": uploaded_file.type,
-                "size": uploaded_file.size,
-            }
-        )
-
-    st.markdown("###  Uploaded Documents")
-
-    document_rows = []
-
-    for report in uploaded_reports:
-
-        document_rows.append(
-            {
-                "File": report["name"],
-                "Type": report["type"],
-                "Size": f'{report["size"] / 1024:.1f} KB',
-                "Status": "Uploaded",
-            }
-        )
-
-    st.table(document_rows)
-
-else:
-
-    st.info(
-        "No clinical document uploaded yet. "
-        "You may continue with structured patient information."
-    )
-
-
-# ============================================================
-# ADDITIONAL NOTES
-# ============================================================
-
-additional_notes = st.text_area(
-    " Additional Clinical Notes",
-    placeholder=(
-        "Enter any additional clinical information, symptoms, "
-        "observations, or questions for the evidence assessment."
-    ),
+    placeholder="Other relevant medical conditions or diagnoses...",
+    height=75,
 )
 
 
@@ -974,12 +766,17 @@ additional_notes = st.text_area(
 # ============================================================
 
 patient_data = {
+
     "age": age,
     "sex": sex,
     "marital_status": marital_status,
     "occupation": occupation,
     "residence": residence,
     "work_type": work_type,
+
+    "clinical_notes": clinical_notes,
+
+    "healthcare_access": residence_extra,
 
     "family_history": family_history,
     "family_history_cvd": family_history_cvd,
@@ -989,6 +786,7 @@ patient_data = {
 
     "weight": weight,
     "height": height,
+    "bmi": calculated_bmi,
     "waist_circumference": waist_circumference,
 
     "fasting_glucose": fasting_glucose,
@@ -1026,99 +824,104 @@ patient_data = {
     "medical_history": medical_history,
     "medications": medications,
     "recent_medication": recent_medication,
-    "new_medication_details": new_medication_details,
-
-    "additional_notes": additional_notes,
 
     "uploaded_reports": uploaded_reports,
 }
 
 
 # ============================================================
-# CLINICAL DATA SUMMARY
+# 8. CLINICAL DATA SUMMARY
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> Clinical Data Summary</div>',
-    unsafe_allow_html=True,
-)
+section_heading("📊 8. Clinical Data Summary")
 
 summary_rows = [
-    {
-        "Clinical Parameter": "Age",
-        "Patient Information": f"{age} years",
-    },
-    {
-        "Clinical Parameter": "Sex",
-        "Patient Information": sex,
-    },
-    {
-        "Clinical Parameter": "BMI",
-        "Patient Information": f"{calculated_bmi:.1f} kg/mÂ²",
-    },
-    {
-        "Clinical Parameter": "Fasting glucose",
-        "Patient Information": f"{fasting_glucose:.1f} mg/dL",
-    },
-    {
-        "Clinical Parameter": "HbA1c",
-        "Patient Information": f"{hba1c:.1f}%",
-    },
-    {
-        "Clinical Parameter": "Blood pressure",
-        "Patient Information": (
-            f"{systolic_bp:.0f}/{diastolic_bp:.0f} mmHg"
-        ),
-    },
-    {
-        "Clinical Parameter": "Family history",
-        "Patient Information": family_history,
-    },
-    {
-        "Clinical Parameter": "Physical activity",
-        "Patient Information": physical_activity,
-    },
-    {
-        "Clinical Parameter": "Fruit & vegetables",
-        "Patient Information": fruit_vegetable_intake,
-    },
-    {
-        "Clinical Parameter": "Whole grains",
-        "Patient Information": whole_grain_intake,
-    },
-    {
-        "Clinical Parameter": "Sugary drinks",
-        "Patient Information": sugary_drinks,
-    },
-    {
-        "Clinical Parameter": "Processed foods",
-        "Patient Information": processed_food,
-    },
-    {
-        "Clinical Parameter": "Smoking",
-        "Patient Information": smoking,
-    },
-    {
-        "Clinical Parameter": "Alcohol",
-        "Patient Information": alcohol,
-    },
+    {"Clinical Parameter": "Age", "Patient Information": f"{age} years"},
+    {"Clinical Parameter": "Sex", "Patient Information": sex},
+    {"Clinical Parameter": "BMI", "Patient Information": f"{calculated_bmi:.1f} kg/m²"},
+    {"Clinical Parameter": "Fasting glucose", "Patient Information": f"{fasting_glucose:.1f} mg/dL"},
+    {"Clinical Parameter": "HbA1c", "Patient Information": f"{hba1c:.1f}%"},
+    {"Clinical Parameter": "Blood pressure", "Patient Information": f"{systolic_bp:.0f}/{diastolic_bp:.0f} mmHg"},
+    {"Clinical Parameter": "Family history", "Patient Information": family_history},
+    {"Clinical Parameter": "Healthcare access", "Patient Information": residence_extra},
+    {"Clinical Parameter": "Physical activity", "Patient Information": physical_activity},
+    {"Clinical Parameter": "Fruit & vegetables", "Patient Information": fruit_vegetable_intake},
+    {"Clinical Parameter": "Whole grains", "Patient Information": whole_grain_intake},
+    {"Clinical Parameter": "Sugary drinks", "Patient Information": sugary_drinks},
+    {"Clinical Parameter": "Processed foods", "Patient Information": processed_food},
+    {"Clinical Parameter": "Smoking", "Patient Information": smoking},
+    {"Clinical Parameter": "Alcohol", "Patient Information": alcohol},
 ]
 
-st.table(summary_rows)
-
-
-# ============================================================
-# 9. CLINICAL DATA VALIDATION
-# ============================================================
-
-st.markdown(
-    '<div class="section-title">âœ… 9. Clinical Data Validation</div>',
-    unsafe_allow_html=True,
+st.dataframe(
+    summary_rows,
+    use_container_width=True,
+    hide_index=True,
 )
+
+
+# ============================================================
+# 9. VISUAL CLINICAL INDICATOR OVERVIEW
+# ============================================================
+
+section_heading("📈 9. Visual Clinical Indicator Overview")
+
+st.caption(
+    "Patient measurements compared with commonly used clinical "
+    "reference thresholds. This is not an individual diabetes "
+    "risk probability or validated prediction score."
+)
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 3.8))
+
+indicators = [
+    ("BMI", calculated_bmi, 23, 25, "kg/m²", 40),
+    ("Fasting Glucose", fasting_glucose, 100, 126, "mg/dL", 250),
+    ("HbA1c", hba1c, 5.7, 6.5, "%", 12),
+]
+
+for ax, (name, value, lower, upper, unit, maximum) in zip(
+    axes,
+    indicators,
+):
+
+    ax.barh(
+        [name],
+        [value],
+    )
+
+    ax.axvline(
+        lower,
+        linestyle="--",
+        label=f"First threshold: {lower}",
+    )
+
+    ax.axvline(
+        upper,
+        linestyle=":",
+        label=f"Second threshold: {upper}",
+    )
+
+    ax.set_xlim(0, maximum)
+    ax.set_title(f"{name}: {value:.1f} {unit}")
+    ax.set_xlabel("Measured value")
+    ax.legend(fontsize=7)
+
+plt.tight_layout()
+st.pyplot(fig)
+plt.close(fig)
+
+
+
+# ============================================================
+# 10. CLINICAL DATA VALIDATION
+# ============================================================
+
+section_heading("✅ 10. Clinical Data Validation")
 
 validation_result = validate_patient_data(patient_data)
 
-if validation_result["is_valid"]:
+if validation_result.get("is_valid", False):
 
     st.success(
         "Patient data validation completed successfully."
@@ -1130,46 +933,39 @@ else:
         "Please correct the following clinical data errors:"
     )
 
-    for error in validation_result["errors"]:
+    for error in validation_result.get("errors", []):
         st.error(error)
 
+if validation_result.get("warnings"):
 
-if validation_result["warnings"]:
+    st.warning("Validation Warnings")
 
-    st.warning("### Validation Warnings")
+    for warning in validation_result.get("warnings", []):
+        st.write(f"• {warning}")
 
-    for warning in validation_result["warnings"]:
-        st.write(f"â€¢ {warning}")
-
-
-validated_bmi = validation_result.get(
-    "calculated_bmi"
-)
+validated_bmi = validation_result.get("calculated_bmi")
 
 if validated_bmi is not None:
 
     st.metric(
         "Validated BMI",
-        f"{validated_bmi:.1f} kg/mÂ²",
+        f"{validated_bmi:.1f} kg/m²",
     )
 
 
 # ============================================================
-# 10. EVIDENCE-GROUNDED AI ASSESSMENT
+# 11. EVIDENCE-GROUNDED AI ASSESSMENT
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> 10. Evidence-Grounded AI Assessment</div>',
-    unsafe_allow_html=True,
-)
+section_heading("🧠 11. Evidence-Grounded AI Assessment")
 
 if st.button(
-    " Generate Evidence-Grounded AI Assessment",
+    "Generate Evidence-Grounded AI Assessment",
     type="primary",
     use_container_width=True,
 ):
 
-    if not validation_result["is_valid"]:
+    if not validation_result.get("is_valid", False):
 
         st.error(
             "Assessment cannot be generated until "
@@ -1189,90 +985,343 @@ if st.button(
                     top_k=3,
                 )
 
-                if result.get("success"):
+                if not isinstance(result, dict):
 
-                    st.markdown(
-                        '<div class="ai-box">',
-                        unsafe_allow_html=True,
+                    st.error(
+                        "The assessment module returned an unexpected result."
                     )
 
-                    st.markdown(
-                        "###  AI Clinical Assessment"
+                elif result.get("success"):
+
+                    assessment_text = result.get(
+                        "assessment",
+                        "No assessment text was returned.",
                     )
 
-                    st.markdown(
-                        result["assessment"]
+                    # --------------------------------------------
+                    # AI INTERPRETATION
+                    # --------------------------------------------
+
+                    st.markdown("### 🧠 AI Clinical Interpretation")
+
+                    with st.container(border=True):
+                        st.markdown(assessment_text)
+
+                    # --------------------------------------------
+                    # GRAPHICAL CLINICAL PROFILE
+                    # --------------------------------------------
+
+                    st.markdown("### 📊 Clinical Indicator Profile")
+
+                    st.caption(
+                        "Patient values compared with clinical "
+                        "reference thresholds. These charts do not "
+                        "represent a calculated risk score."
                     )
 
-                    st.markdown(
-                        "</div>",
-                        unsafe_allow_html=True,
+                    fig, axes = plt.subplots(
+                        1,
+                        3,
+                        figsize=(14, 4),
                     )
 
-                    # ====================================================
-                    # SUPPORTING EVIDENCE
-                    # ====================================================
+                    chart_data = [
+                        ("BMI", calculated_bmi, 23, 25, 40, "kg/m²"),
+                        ("Fasting Glucose", fasting_glucose, 100, 126, 250, "mg/dL"),
+                        ("HbA1c", hba1c, 5.7, 6.5, 12, "%"),
+                    ]
 
-                    evidence = result.get(
-                        "evidence",
+                    for ax, (
+                        name,
+                        value,
+                        lower,
+                        upper,
+                        maximum,
+                        unit,
+                    ) in zip(axes, chart_data):
+
+                        ax.barh(
+                            [name],
+                            [value],
+                        )
+
+                        ax.axvline(
+                            lower,
+                            linestyle="--",
+                            label=f"Reference: {lower}",
+                        )
+
+                        ax.axvline(
+                            upper,
+                            linestyle=":",
+                            label=f"Reference: {upper}",
+                        )
+
+                        ax.set_xlim(0, maximum)
+                        ax.set_title(f"{value:.1f} {unit}")
+                        ax.legend(fontsize=7)
+
+                    plt.tight_layout()
+                    st.pyplot(fig)
+                    plt.close(fig)
+
+                                       # --------------------------------------------
+                    # CLINICAL RISK INDICATORS
+                    # --------------------------------------------
+
+                    st.markdown("### **Clinical Risk Indicators**")
+
+                    risk_rows = []
+
+                    # BMI interpretation
+                    if calculated_bmi >= 25:
+                        bmi_interpretation = "Obesity range (Asian Indian classification)"
+                        bmi_attention = "High attention"
+                    elif calculated_bmi >= 23:
+                        bmi_interpretation = "Increased-risk range"
+                        bmi_attention = "Review"
+                    else:
+                        bmi_interpretation = "Below increased-risk threshold"
+                        bmi_attention = "No flag"
+
+                    risk_rows.append({
+                        "Clinical Indicator": "BMI",
+                        "Patient Finding": f"{calculated_bmi:.1f} kg/m²",
+                        "Interpretation": bmi_interpretation,
+                        "Attention": bmi_attention
+                    })
+
+                    # Fasting glucose interpretation
+                    if fasting_glucose >= 126:
+                        glucose_interpretation = "Diabetes threshold reached; confirmation required"
+                        glucose_attention = "High attention"
+                    elif fasting_glucose >= 100:
+                        glucose_interpretation = "Impaired fasting glucose range"
+                        glucose_attention = "Review"
+                    else:
+                        glucose_interpretation = "Below impaired fasting glucose threshold"
+                        glucose_attention = "No flag"
+
+                    risk_rows.append({
+                        "Clinical Indicator": "Fasting glucose",
+                        "Patient Finding": f"{fasting_glucose:.1f} mg/dL",
+                        "Interpretation": glucose_interpretation,
+                        "Attention": glucose_attention
+                    })
+
+                    # HbA1c interpretation
+                    if hba1c >= 6.5:
+                        hba1c_interpretation = "Diabetes threshold reached; confirmation required"
+                        hba1c_attention = "High attention"
+                    elif hba1c >= 5.7:
+                        hba1c_interpretation = "Prediabetes range"
+                        hba1c_attention = "Review"
+                    else:
+                        hba1c_interpretation = "Below prediabetes threshold"
+                        hba1c_attention = "No flag"
+
+                    risk_rows.append({
+                        "Clinical Indicator": "HbA1c",
+                        "Patient Finding": f"{hba1c:.1f}%",
+                        "Interpretation": hba1c_interpretation,
+                        "Attention": hba1c_attention
+                    })
+
+                    # Additional clinical risk factors
+                    additional_factors = [
+                        ("Family history of diabetes", family_history),
+                        ("Previous prediabetes", previous_prediabetes),
+                        ("Gestational diabetes history", gestational_diabetes),
+                        ("PCOS history", pcos_history),
+                        ("Hypertension", hypertension),
+                        ("Dyslipidemia", dyslipidemia),
+                    ]
+
+                    for factor, value in additional_factors:
+
+                        if value in ["Yes", "Diagnosed"]:
+                            interpretation = "Relevant clinical risk factor present"
+                            attention = "Review"
+
+                        elif value in ["No", "Not diagnosed", "Not applicable"]:
+                            interpretation = "Not reported"
+                            attention = "No flag"
+
+                        else:
+                            interpretation = "Status unknown"
+                            attention = "Information needed"
+
+                        risk_rows.append({
+                            "Clinical Indicator": factor,
+                            "Patient Finding": value,
+                            "Interpretation": interpretation,
+                            "Attention": attention
+                        })
+
+                    st.dataframe(
+                        risk_rows,
+                        use_container_width=True,
+                        hide_index=True
+                    )
+
+                    st.caption(
+                        "Clinical thresholds are reference points, not an "
+                        "individual diabetes risk score. Laboratory findings "
+                        "require appropriate clinical interpretation and "
+                        "confirmatory testing where indicated."
+                    )
+
+                                       # --------------------------------------------
+                    # CLINICAL SAFETY REVIEW
+                    # --------------------------------------------
+
+                    st.markdown("### **Clinical Safety Review**")
+
+                    guardrail_status = result.get(
+                        "guardrail_status",
+                        "NOT AVAILABLE"
+                    )
+
+                    guardrail_flags = result.get(
+                        "guardrail_flags",
                         []
                     )
 
-                    st.markdown(
-                        "###  Supporting Medical Evidence"
+                    if isinstance(guardrail_flags, dict):
+                        technical_flags = guardrail_flags
+                    else:
+                        technical_flags = {}
+
+                        for flag in guardrail_flags:
+                            if isinstance(flag, str) and ":" in flag:
+                                key, value = flag.split(":", 1)
+                                technical_flags[key.strip()] = value.strip()
+                            else:
+                                technical_flags[str(flag)] = True
+
+                    if guardrail_status in [
+                        "PASSED",
+                        "NO FLAGS DETECTED"
+                    ]:
+                        st.success(
+                            "Safety checks completed: No heuristic "
+                            "safety flags detected."
+                        )
+
+                    elif technical_flags:
+                        st.warning(
+                            "Some safety checks require additional review."
+                        )
+
+                    else:
+                        st.info(
+                            "Safety verification status is unavailable. "
+                            "Manual clinical review is required."
+                        )
+
+                    with st.expander("Technical Validation Details"):
+
+                        if technical_flags:
+                            st.dataframe(
+                                [
+                                    {
+                                        "Safety Check": key.replace("_", " ").title(),
+                                        "Flag Status": str(value)
+                                    }
+                                    for key, value in technical_flags.items()
+                                ],
+                                use_container_width=True,
+                                hide_index=True
+                            )
+                        else:
+                            st.write(
+                                "No individual technical flag details "
+                                "were returned."
+                            )
+
+                    st.caption(
+                        "These rule-based checks are preliminary safeguards. "
+                        "They do not establish medical accuracy or clinical "
+                        "validation."
                     )
 
-                    if evidence:
+                    # --------------------------------------------
+                    # SUPPORTING MEDICAL EVIDENCE
+                    # --------------------------------------------
 
-                        st.write(
-                            f"{len(evidence)} supporting "
-                            "evidence items retrieved."
+                    evidence = result.get("evidence", [])
+
+                    if not isinstance(evidence, list):
+                        evidence = []
+
+                    numbered_evidence = []
+
+                    for index, item in enumerate(evidence, start=1):
+
+                        if isinstance(item, dict):
+
+                            numbered_item = dict(item)
+
+                            numbered_item["evidence_number"] = (
+                                item.get("evidence_number") or index
+                            )
+
+                            numbered_evidence.append(numbered_item)
+
+                    st.markdown("### 📚 Supporting Medical Evidence")
+
+                    if numbered_evidence:
+
+                        st.success(
+                            f"{len(numbered_evidence)} supporting "
+                            "evidence item(s) retrieved."
                         )
 
                         evidence_table = []
 
-                        for item in evidence:
+                        for item in numbered_evidence:
 
-                            evidence_table.append(
-                                {
-                                    "Evidence": item.get(
-                                        "evidence_number",
-                                        ""
-                                    ),
-                                    "Article ID": item.get(
-                                        "article_id",
-                                        ""
-                                    ),
-                                    "Source": item.get(
-                                        "source",
-                                        ""
-                                    ),
-                                    "Year": item.get(
-                                        "year",
-                                        ""
-                                    ),
-                                    "PMID": item.get(
-                                        "pmid",
-                                        ""
-                                    ),
-                                }
-                            )
+                            evidence_table.append({
+                                "Evidence": item.get("evidence_number", ""),
+                                "Article Title": item.get(
+                                    "title",
+                                    "Title unavailable",
+                                ),
+                                "Article ID": item.get("article_id", ""),
+                                "Source": item.get("source", ""),
+                                "Year": item.get(
+                                    "year",
+                                    item.get("publication_year", ""),
+                                ),
+                                "PMID": item.get("pmid", ""),
+                            })
 
-                        st.table(
-                            evidence_table
+                        st.dataframe(
+                            evidence_table,
+                            use_container_width=True,
+                            hide_index=True,
                         )
 
-                        for item in evidence:
+                        for item in numbered_evidence:
+
+                            evidence_number = item.get(
+                                "evidence_number",
+                                "",
+                            )
+
+                            article_id = item.get(
+                                "article_id",
+                                "Unknown",
+                            )
 
                             with st.expander(
-                                f"Evidence {item.get('evidence_number')} â€” "
-                                f"{item.get('article_id', 'Unknown')}"
+                                f"Evidence {evidence_number} — {article_id}"
                             ):
 
                                 st.write(
                                     item.get(
                                         "title",
-                                        "No title available."
+                                        "No title available.",
                                     )
                                 )
 
@@ -1281,94 +1330,128 @@ if st.button(
                                         "text",
                                         item.get(
                                             "document",
-                                            "No evidence text available."
-                                        )
+                                            "No evidence text available.",
+                                        ),
                                     )
                                 )
+
+                                publication_year = item.get(
+                                    "year",
+                                    item.get("publication_year", ""),
+                                )
+
+                                if publication_year:
+                                    st.caption(
+                                        f"Publication year: {publication_year}"
+                                    )
+
+                                if item.get("pmid"):
+                                    st.caption(
+                                        f"PMID: {item['pmid']}"
+                                    )
+
+                                if item.get("doi"):
+                                    st.caption(
+                                        f"DOI: {item['doi']}"
+                                    )
 
                     else:
 
                         st.warning(
-                            "No supporting evidence was retrieved."
+                            "No supporting medical evidence was retrieved. "
+                            "The assessment should not be treated as "
+                            "evidence-supported."
                         )
 
-
-                    # ====================================================
+                    # --------------------------------------------
                     # EVIDENCE VERIFICATION
-                    # ====================================================
+                    # --------------------------------------------
 
-                    st.markdown(
-                        "###  Evidence Verification"
-                    )
+                    st.markdown("### 🔍 Evidence Verification")
 
                     verification = verify_assessment(
-                        result["assessment"],
-                        evidence,
+                        assessment_text,
+                        numbered_evidence,
                     )
 
                     status = verification.get(
                         "status",
-                        "UNKNOWN"
+                        "UNKNOWN",
+                    )
+
+                    references_found = verification.get(
+                        "total_references_found",
+                        verification.get(
+                            "evidence_references_found",
+                            0,
+                        ),
+                    )
+
+                    verified_count = verification.get(
+                        "total_verified",
+                        verification.get(
+                            "verified_references",
+                            0,
+                        ),
+                    )
+
+                    unverified_count = verification.get(
+                        "total_unverified",
+                        verification.get(
+                            "unverified_references",
+                            0,
+                        ),
                     )
 
                     col1, col2, col3 = st.columns(3)
 
-                    col1.metric("References Found", verification.get("total_references_found", 0))
-                    col2.metric("Verified", verification.get("total_verified", 0))
-                    col3.metric("Needs Review", verification.get("total_unverified", 0))
+                    col1.metric(
+                        "References Found",
+                        references_found,
+                    )
+
+                    col2.metric(
+                        "Verified",
+                        verified_count,
+                    )
+
+                    col3.metric(
+                        "Needs Review",
+                        unverified_count,
+                    )
 
                     if status == "VERIFIED":
 
                         st.success(
-                            "âœ… All explicit evidence references "
-                            "matched the retrieved evidence."
+                            "All explicit evidence references matched "
+                            "the retrieved evidence items."
                         )
 
                     elif status == "REVIEW REQUIRED":
 
                         st.warning(
-                            "âš ï¸ Evidence verification requires review."
+                            "Evidence verification requires manual review."
                         )
 
                     else:
 
                         st.error(
-                            "âŒ Evidence verification failed."
+                            "Evidence verification could not confirm "
+                            "all references."
                         )
-
-                    verification_table = [
-                        {
-                            "Measure": "References found",
-                            "Result": verification.get(
-                                "total_references_found",
-                                0
-                            ),
-                        },
-                        {
-                            "Measure": "Verified",
-                            "Result": verification.get(
-                                "total_verified",
-                                0
-                            ),
-                        },
-                        {
-                            "Measure": "Unverified",
-                            "Result": verification.get(
-                                "total_unverified",
-                                0
-                            ),
-                        },
-                    ]
-
-                    st.table(
-                        verification_table
-                    )
 
                     st.info(
                         verification.get(
                             "message",
-                            ""
+                            "Evidence verification completed.",
                         )
+                    )
+
+                    st.caption(
+                        "Reference matching confirms that cited evidence "
+                        "identifiers correspond to retrieved evidence items. "
+                        "It does not prove that a source supports every "
+                        "claim or that the clinical interpretation is correct."
                     )
 
                 else:
@@ -1377,21 +1460,83 @@ if st.button(
                         "The assessment could not be generated."
                     )
 
-                    st.error(
+                    st.warning(
                         result.get(
                             "assessment",
-                            "Unknown error."
+                            "Check API configuration, evidence retrieval "
+                            "and the application terminal for details.",
                         )
                     )
 
-            except Exception as e:
+            except Exception as error:
 
                 st.error(
-                    "An unexpected error occurred "
-                    "while generating the assessment."
+                    "An unexpected error occurred while generating "
+                    "the assessment."
                 )
 
-                st.exception(e)
+                st.exception(error)
+
+
+# ============================================================
+# 12. MEDICATION INTERVENTION & MONITORING
+# ============================================================
+
+section_heading("💉 12. Medication Intervention & Monitoring")
+
+medication_names = []
+
+for medication_text in [medications, recent_medication]:
+
+    if isinstance(medication_text, str):
+
+        medication_names.extend([
+            med.strip()
+            for med in medication_text.replace("\n", ",").split(",")
+            if med.strip()
+        ])
+
+# Remove duplicates while preserving order.
+medication_names = list(dict.fromkeys(medication_names))
+
+if medication_names:
+
+    medication_status = []
+
+    for medication in medication_names:
+
+        if medication_text == recent_medication:
+            status = "Previous medication"
+        else:
+            status = "Medication entered for review"
+
+        medication_status.append({
+            "Medication": medication,
+            "Review Status": status,
+        })
+
+    st.dataframe(
+        medication_status,
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.info(
+        "Medication information is displayed for clinical review. "
+        "A verified interaction assessment requires dedicated "
+        "drug-interaction evidence and patient-specific review."
+    )
+
+else:
+
+    st.info(
+        "No medication information was entered in the sidebar."
+    )
+
+st.caption(
+    "This research prototype does not confirm drug interactions, "
+    "recommend medication changes or provide prescribing instructions."
+)
 
 
 # ============================================================
@@ -1401,16 +1546,18 @@ if st.button(
 st.markdown(
     """
     <div class="footer">
-        T2D-EviGuide | MSc Health Informatics / Data Analytics
-        Research Prototype
+
+        <strong>T2D-EviGuide</strong>
+        <br>
+        MSc Healthcare Informatics and Data Analytics
         <br><br>
-        Experimental evidence-support system.
-        It does not constitute clinical validation,
-        autonomous diagnosis, or medication prescribing.
+
+        Experimental evidence-support research prototype.
+        <br>
+        Not clinically validated. Does not provide autonomous
+        diagnosis or medication prescribing.
+
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-
-

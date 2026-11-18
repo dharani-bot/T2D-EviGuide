@@ -3,22 +3,52 @@ from typing import Dict, List, Any
 
 def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Performs data-quality validation for the T2D-EviGuide
-    patient assessment form.
+    T2D-EviGuide Clinical Data Validation Module.
 
-    This function checks:
-    - required fields
-    - reasonable numerical boundaries
-    - internal consistency
-    - selected categorical values
-    - availability of important clinical information
+    Performs data-quality checks before an AI assessment.
 
-    It does NOT diagnose disease or independently determine
-    diabetes risk.
+    Checks:
+    - Required fields
+    - Numeric data types
+    - Clinically reasonable input boundaries
+    - BMI calculation
+    - Blood pressure consistency
+    - Missing clinical information
+    - Lifestyle and dietary information
+    - Uploaded document availability
+
+    This module does NOT diagnose diabetes,
+    calculate disease probabilities, or determine
+    clinical risk independently.
     """
 
     errors: List[str] = []
     warnings: List[str] = []
+
+    # =========================================================
+    # HELPER FUNCTIONS
+    # =========================================================
+
+    def get_numeric_value(field):
+        """
+        Safely retrieve numeric values.
+        Returns None for missing or invalid values.
+        """
+
+        value = data.get(field)
+
+        if value is None or value == "":
+            return None
+
+        try:
+            return float(value)
+
+        except (TypeError, ValueError):
+            errors.append(
+                f"{field.replace('_', ' ').capitalize()} "
+                "must contain a valid numeric value."
+            )
+            return None
 
     # =========================================================
     # REQUIRED FIELDS
@@ -40,67 +70,120 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
         value = data.get(field)
 
         if value is None or value == "":
-            errors.append(f"{label} is required.")
+
+            errors.append(
+                f"{label} is required."
+            )
 
     # =========================================================
-    # AGE
+    # NUMERIC FIELD EXTRACTION
     # =========================================================
 
-    age = data.get("age")
+    age = get_numeric_value("age")
+    height = get_numeric_value("height")
+    weight = get_numeric_value("weight")
+
+    waist = get_numeric_value("waist_circumference")
+
+    glucose = get_numeric_value("fasting_glucose")
+    hba1c = get_numeric_value("hba1c")
+
+    total_cholesterol = get_numeric_value(
+        "total_cholesterol"
+    )
+
+    hdl = get_numeric_value("hdl")
+    ldl = get_numeric_value("ldl")
+
+    triglycerides = get_numeric_value(
+        "triglycerides"
+    )
+
+    systolic = get_numeric_value("systolic_bp")
+    diastolic = get_numeric_value("diastolic_bp")
+
+    activity_duration = get_numeric_value(
+        "activity_duration"
+    )
+
+    sedentary_hours = get_numeric_value(
+        "sedentary_hours"
+    )
+
+    sleep_duration = get_numeric_value(
+        "sleep_duration"
+    )
+
+    # =========================================================
+    # AGE VALIDATION
+    # =========================================================
 
     if age is not None:
 
+        if not age.is_integer():
+
+            errors.append(
+                "Age must be a whole number."
+            )
+
         if age < 1 or age > 120:
+
             errors.append(
                 "Age must be between 1 and 120 years."
             )
 
     # =========================================================
-    # HEIGHT
+    # HEIGHT VALIDATION
     # =========================================================
-
-    height = data.get("height")
 
     if height is not None:
 
         if height < 50 or height > 250:
+
             errors.append(
                 "Height must be between 50 and 250 cm."
             )
 
     # =========================================================
-    # WEIGHT
+    # WEIGHT VALIDATION
     # =========================================================
-
-    weight = data.get("weight")
 
     if weight is not None:
 
         if weight <= 0 or weight > 300:
+
             errors.append(
-                "Weight must be greater than 0 and no more than 300 kg."
+                "Weight must be greater than 0 "
+                "and no more than 300 kg."
             )
 
     # =========================================================
-    # BMI
+    # BMI CALCULATION
     # =========================================================
 
-    bmi = None
+    calculated_bmi = None
 
     if (
         height is not None
         and weight is not None
         and height > 0
+        and weight > 0
+        and height <= 250
+        and height >= 50
+        and weight <= 300
     ):
 
         height_m = height / 100
 
-        bmi = weight / (height_m ** 2)
+        calculated_bmi = round(
+            weight / (height_m ** 2),
+            2
+        )
 
-        if bmi < 10 or bmi > 100:
+        if calculated_bmi < 10 or calculated_bmi > 100:
 
             warnings.append(
-                "The calculated BMI is outside the expected "
+                "Calculated BMI is outside the expected "
                 "range. Please verify height and weight."
             )
 
@@ -108,13 +191,9 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # WAIST CIRCUMFERENCE
     # =========================================================
 
-    waist = data.get("waist_circumference")
-
     if waist is not None:
 
-        if waist != "" and (
-            waist < 30 or waist > 250
-        ):
+        if waist < 30 or waist > 250:
 
             errors.append(
                 "Waist circumference must be between "
@@ -124,8 +203,6 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # =========================================================
     # FASTING GLUCOSE
     # =========================================================
-
-    glucose = data.get("fasting_glucose")
 
     if glucose is not None:
 
@@ -139,8 +216,6 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # =========================================================
     # HbA1c
     # =========================================================
-
-    hba1c = data.get("hba1c")
 
     if hba1c is not None:
 
@@ -161,18 +236,21 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
             1000,
             "mg/dL"
         ),
+
         "hdl": (
             "HDL cholesterol",
             0,
             500,
             "mg/dL"
         ),
+
         "ldl": (
             "LDL cholesterol",
             0,
             1000,
             "mg/dL"
         ),
+
         "triglycerides": (
             "Triglycerides",
             0,
@@ -181,17 +259,22 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
         ),
     }
 
+    lipid_values = {
+        "total_cholesterol": total_cholesterol,
+        "hdl": hdl,
+        "ldl": ldl,
+        "triglycerides": triglycerides,
+    }
+
     for field, details in lipid_fields.items():
 
         label, minimum, maximum, unit = details
 
-        value = data.get(field)
+        value = lipid_values[field]
 
         if value is not None:
 
-            if value != "" and (
-                value < minimum or value > maximum
-            ):
+            if value < minimum or value > maximum:
 
                 errors.append(
                     f"{label} must be between "
@@ -201,9 +284,6 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # =========================================================
     # BLOOD PRESSURE
     # =========================================================
-
-    systolic = data.get("systolic_bp")
-    diastolic = data.get("diastolic_bp")
 
     if systolic is not None:
 
@@ -230,6 +310,8 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     if (
         systolic is not None
         and diastolic is not None
+        and 50 <= systolic <= 300
+        and 30 <= diastolic <= 200
     ):
 
         if diastolic >= systolic:
@@ -244,16 +326,9 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # PHYSICAL ACTIVITY DURATION
     # =========================================================
 
-    activity_duration = data.get(
-        "activity_duration"
-    )
-
     if activity_duration is not None:
 
-        if activity_duration != "" and (
-            activity_duration < 0
-            or activity_duration > 600
-        ):
+        if activity_duration < 0 or activity_duration > 600:
 
             errors.append(
                 "Physical activity duration must be "
@@ -264,16 +339,9 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # SEDENTARY TIME
     # =========================================================
 
-    sedentary_hours = data.get(
-        "sedentary_hours"
-    )
-
     if sedentary_hours is not None:
 
-        if sedentary_hours != "" and (
-            sedentary_hours < 0
-            or sedentary_hours > 24
-        ):
+        if sedentary_hours < 0 or sedentary_hours > 24:
 
             errors.append(
                 "Sedentary time must be between "
@@ -281,19 +349,12 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
             )
 
     # =========================================================
-    # SLEEP
+    # SLEEP DURATION
     # =========================================================
-
-    sleep_duration = data.get(
-        "sleep_duration"
-    )
 
     if sleep_duration is not None:
 
-        if sleep_duration != "" and (
-            sleep_duration < 0
-            or sleep_duration > 24
-        ):
+        if sleep_duration < 0 or sleep_duration > 24:
 
             errors.append(
                 "Sleep duration must be between "
@@ -304,16 +365,19 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # FAMILY HISTORY
     # =========================================================
 
-    if data.get("family_history") == "Unknown":
+    if data.get("family_history") in (
+        None,
+        "",
+        "Unknown"
+    ):
 
         warnings.append(
-            "Family history of diabetes is unknown. "
-            "This information may be useful for a more "
-            "complete assessment."
+            "Family history of diabetes is unknown "
+            "or unavailable."
         )
 
     # =========================================================
-    # PHYSICAL ACTIVITY
+    # PHYSICAL ACTIVITY INFORMATION
     # =========================================================
 
     if data.get("physical_activity") in (
@@ -331,6 +395,7 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # =========================================================
 
     dietary_fields = {
+
         "fruit_vegetable_intake":
             "Fruit and vegetable intake",
 
@@ -348,6 +413,7 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
         "processed_food":
             "Processed/packaged food consumption",
+
     }
 
     for field, label in dietary_fields.items():
@@ -364,9 +430,7 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # SMOKING
     # =========================================================
 
-    smoking = data.get("smoking")
-
-    if smoking in (
+    if data.get("smoking") in (
         None,
         "",
         "Unknown"
@@ -380,17 +444,14 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
     # ALCOHOL
     # =========================================================
 
-    alcohol = data.get("alcohol")
-
-    if alcohol in (
+    if data.get("alcohol") in (
         None,
         "",
         "Unknown"
     ):
 
         warnings.append(
-            "Alcohol consumption information "
-            "is unavailable."
+            "Alcohol consumption information is unavailable."
         )
 
     # =========================================================
@@ -402,16 +463,14 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
         ""
     )
 
-    if isinstance(
-        medical_history,
-        str
+    if (
+        not isinstance(medical_history, str)
+        or not medical_history.strip()
     ):
 
-        if not medical_history.strip():
-
-            warnings.append(
-                "No additional medical history was provided."
-            )
+        warnings.append(
+            "No additional medical history was provided."
+        )
 
     # =========================================================
     # MEDICATIONS
@@ -422,16 +481,14 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
         ""
     )
 
-    if isinstance(
-        medications,
-        str
+    if (
+        not isinstance(medications, str)
+        or not medications.strip()
     ):
 
-        if not medications.strip():
-
-            warnings.append(
-                "No current medications were provided."
-            )
+        warnings.append(
+            "No current medications were provided."
+        )
 
     # =========================================================
     # ADDITIONAL NOTES
@@ -442,17 +499,14 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
         ""
     )
 
-    if not isinstance(
-        additional_notes,
-        str
-    ):
+    if not isinstance(additional_notes, str):
 
         errors.append(
             "Additional clinical notes must be text."
         )
 
     # =========================================================
-    # REPORT / DOCUMENT INFORMATION
+    # DOCUMENT UPLOAD INFORMATION
     # =========================================================
 
     uploaded_reports = data.get(
@@ -467,14 +521,19 @@ def validate_patient_data(data: Dict[str, Any]) -> Dict[str, Any]:
         )
 
     # =========================================================
-    # FINAL RESULT
+    # FINAL VALIDATION RESULT
     # =========================================================
 
     is_valid = len(errors) == 0
 
     return {
+
         "is_valid": is_valid,
+
         "errors": errors,
+
         "warnings": warnings,
-        "calculated_bmi": bmi,
+
+        "calculated_bmi": calculated_bmi,
+
     }

@@ -1,7 +1,19 @@
-﻿import re
-from backend.rag_engine import build_evidence_package
+﻿from backend.rag_engine import build_evidence_package
 from backend.ai_engine import ask_llm
 from clinical_guardrails_v2 import check_clinical_guardrails_v2
+
+
+# ============================================================
+# HELPER: FORMAT MISSING VALUES
+# ============================================================
+
+def display_value(value):
+
+    if value is None or value == "":
+        return "Not provided"
+
+    return str(value)
+
 
 # ============================================================
 # PATIENT SUMMARY
@@ -9,115 +21,123 @@ from clinical_guardrails_v2 import check_clinical_guardrails_v2
 
 def build_patient_summary(patient_data):
 
+    p = patient_data or {}
+    clinical_notes = p.get("clinical_notes", "")
+
+    if clinical_notes:
+        clinical_notes_section = f"""
+CLINICAL NOTES PROVIDED BY USER:
+{clinical_notes}
+"""
+    else:
+        clinical_notes_section = "No additional clinical notes provided."
+
     summary = f"""
 PATIENT & DEMOGRAPHIC INFORMATION
 
-Age: {patient_data.get('age')}
-Sex: {patient_data.get('sex')}
-Marital status: {patient_data.get('marital_status')}
-Occupation: {patient_data.get('occupation')}
-Nature of work: {patient_data.get('work_activity')}
-Residence: {patient_data.get('residence')}
+Age: {display_value(p.get('age'))}
+Sex: {display_value(p.get('sex'))}
+Marital status: {display_value(p.get('marital_status'))}
+Occupation: {display_value(p.get('occupation'))}
+Nature of work: {display_value(p.get('work_activity'))}
+Residence: {display_value(p.get('residence'))}
 
-Family history of diabetes: {patient_data.get('family_history')}
-Family history of cardiovascular disease: {patient_data.get('family_history_cvd')}
-Previous prediabetes: {patient_data.get('previous_prediabetes')}
-Gestational diabetes history: {patient_data.get('gestational_diabetes')}
+Family history of diabetes: {display_value(p.get('family_history'))}
+Family history of cardiovascular disease: {display_value(p.get('family_history_cvd'))}
+Previous prediabetes: {display_value(p.get('previous_prediabetes'))}
+Gestational diabetes history: {display_value(p.get('gestational_diabetes'))}
 
 
 ANTHROPOMETRIC MEASUREMENTS
 
-Weight: {patient_data.get('weight')} kg
-Height: {patient_data.get('height')} cm
-BMI: {patient_data.get('bmi')} kg/mÂ²
-Waist circumference: {patient_data.get('waist_circumference')} cm
+Weight: {display_value(p.get('weight'))} kg
+Height: {display_value(p.get('height'))} cm
+BMI: {display_value(p.get('bmi'))} kg/m²
+Waist circumference: {display_value(p.get('waist_circumference'))} cm
 
 
 LABORATORY MEASUREMENTS
 
-Fasting blood glucose: {patient_data.get('fasting_glucose')} mg/dL
-HbA1c: {patient_data.get('hba1c')} %
+Fasting blood glucose: {display_value(p.get('fasting_glucose'))} mg/dL
+HbA1c: {display_value(p.get('hba1c'))} %
 
-Total cholesterol: {patient_data.get('total_cholesterol')} mg/dL
-HDL cholesterol: {patient_data.get('hdl')} mg/dL
-LDL cholesterol: {patient_data.get('ldl')} mg/dL
-Triglycerides: {patient_data.get('triglycerides')} mg/dL
+Total cholesterol: {display_value(p.get('total_cholesterol'))} mg/dL
+HDL cholesterol: {display_value(p.get('hdl'))} mg/dL
+LDL cholesterol: {display_value(p.get('ldl'))} mg/dL
+Triglycerides: {display_value(p.get('triglycerides'))} mg/dL
 
 
 VITAL SIGNS
 
-Systolic blood pressure: {patient_data.get('systolic_bp')} mmHg
-Diastolic blood pressure: {patient_data.get('diastolic_bp')} mmHg
+Systolic blood pressure: {display_value(p.get('systolic_bp'))} mmHg
+Diastolic blood pressure: {display_value(p.get('diastolic_bp'))} mmHg
 
 
 PHYSICAL ACTIVITY & LIFESTYLE
 
-Physical activity frequency: {patient_data.get('physical_activity')}
-Activity duration per session: {patient_data.get('activity_duration')} minutes
-Sedentary time: {patient_data.get('sedentary_hours')} hours/day
-Sleep duration: {patient_data.get('sleep_duration')} hours/day
+Physical activity frequency: {display_value(p.get('physical_activity'))}
+Activity duration per session: {display_value(p.get('activity_duration'))} minutes
+Sedentary time: {display_value(p.get('sedentary_hours'))} hours/day
+Sleep duration: {display_value(p.get('sleep_duration'))} hours/day
 
-Smoking: {patient_data.get('smoking')}
-Alcohol consumption: {patient_data.get('alcohol')}
+Smoking: {display_value(p.get('smoking'))}
+Alcohol consumption: {display_value(p.get('alcohol'))}
 
 
 DIETARY INFORMATION
 
-Fruit and vegetable intake: {patient_data.get('fruit_vegetable_intake')}
-Whole grain intake: {patient_data.get('whole_grain_intake')}
-Sugary beverage consumption: {patient_data.get('sugary_drinks')}
-Sweets/added sugar consumption: {patient_data.get('sweets_added_sugar')}
-Fried/high-fat food consumption: {patient_data.get('fried_food')}
-Processed/packaged food consumption: {patient_data.get('processed_food')}
+Fruit and vegetable intake: {display_value(p.get('fruit_vegetable_intake'))}
+Whole grain intake: {display_value(p.get('whole_grain_intake'))}
+Sugary beverage consumption: {display_value(p.get('sugary_drinks'))}
+Sweets/added sugar consumption: {display_value(p.get('sweets_added_sugar'))}
+Fried/high-fat food consumption: {display_value(p.get('fried_food'))}
+Processed/packaged food consumption: {display_value(p.get('processed_food'))}
 
 Additional dietary information:
-{patient_data.get('dietary_notes')}
+{display_value(p.get('dietary_notes'))}
 
 
 MEDICAL HISTORY
 
-Hypertension: {patient_data.get('hypertension')}
-Dyslipidemia: {patient_data.get('dyslipidemia')}
-Cardiovascular disease: {patient_data.get('cardiovascular_disease')}
-Kidney disease: {patient_data.get('kidney_disease')}
-Liver disease: {patient_data.get('liver_disease')}
-PCOS: {patient_data.get('pcos')}
+Hypertension: {display_value(p.get('hypertension'))}
+Dyslipidemia: {display_value(p.get('dyslipidemia'))}
+Cardiovascular disease: {display_value(p.get('cardiovascular_disease'))}
+Kidney disease: {display_value(p.get('kidney_disease'))}
+Liver disease: {display_value(p.get('liver_disease'))}
+PCOS: {display_value(p.get('pcos'))}
 
 Other medical history:
-{patient_data.get('medical_history')}
+{display_value(p.get('medical_history'))}
 
 
 MEDICATION INFORMATION
 
 Current medications:
-{patient_data.get('medications')}
+{display_value(p.get('medications'))}
 
-Recently added medication: {patient_data.get('recent_medication')}
+Recently added medication:
+{display_value(p.get('recent_medication'))}
+
 New medication details:
-{patient_data.get('new_medication')}
+{display_value(p.get('new_medication'))}
 
 
 ADDITIONAL CLINICAL INFORMATION
 
 Additional clinical notes:
-{patient_data.get('additional_notes')}
+{display_value(p.get('additional_notes'))}
 
 Uploaded clinical reports:
-{patient_data.get('uploaded_reports')}
+{display_value(p.get('uploaded_reports'))}
 """
-
     return summary.strip()
 
 
 # ============================================================
-# CLINICAL QUESTION
+# EVIDENCE FORMATTING
 # ============================================================
 
 def format_evidence_for_llm(evidence):
-    """
-    Convert retrieved evidence into a structured text format
-    that can be supplied to the LLM.
-    """
 
     if not evidence:
         return "No evidence was retrieved."
@@ -126,32 +146,17 @@ def format_evidence_for_llm(evidence):
 
     for item in evidence:
 
-        evidence_number = item.get(
-            "evidence_number",
-            "N/A"
-        )
-
-        article_id = item.get(
-            "article_id",
-            "N/A"
-        )
-
-        title = item.get(
-            "title",
-            "N/A"
-        )
-
-        source = item.get(
-            "source",
-            "N/A"
-        )
+        evidence_number = item.get("evidence_number", "N/A")
+        article_id = item.get("article_id", "N/A")
+        title = item.get("title", "N/A")
+        source = item.get("source", "N/A")
+        year = item.get("year", item.get("publication_year", "Not available"))
+        pmid = item.get("pmid", "Not available")
+        doi = item.get("doi", "Not available")
 
         text = item.get(
             "text",
-            item.get(
-                "document",
-                ""
-            )
+            item.get("document", "")
         )
 
         formatted.append(
@@ -159,8 +164,10 @@ def format_evidence_for_llm(evidence):
 [Evidence {evidence_number} | {article_id}]
 
 Title: {title}
-
 Source: {source}
+Publication year: {year}
+PMID: {pmid}
+DOI: {doi}
 
 Evidence:
 {text}
@@ -168,81 +175,142 @@ Evidence:
         )
 
     return "\n".join(formatted)
+
+
+# ============================================================
+# CLINICAL QUESTION
+# ============================================================
+
 def create_clinical_question(patient_data):
-    """
-    Create an evidence-retrieval question from the patient's
-    multimodal clinical information.
 
-    The question is used by the RAG system to retrieve
-    relevant Type 2 Diabetes evidence from the literature.
-    """
+    p = patient_data or {}
 
-    return """
-Assess the patient's early risk indicators for Type 2 Diabetes
-using the available multimodal clinical information.
+    patient_measurements = []
 
-Focus the evidence retrieval on:
+    relevant_fields = {
+        "BMI": "bmi",
+        "HbA1c": "hba1c",
+        "Fasting glucose": "fasting_glucose",
+        "Waist circumference": "waist_circumference",
+        "Systolic blood pressure": "systolic_bp",
+        "Diastolic blood pressure": "diastolic_bp",
+        "Family history of diabetes": "family_history",
+        "Previous prediabetes": "previous_prediabetes",
+        "Gestational diabetes": "gestational_diabetes",
+    }
 
-1. Interpretation of fasting blood glucose and HbA1c
-   when supported by the retrieved literature.
+    for label, key in relevant_fields.items():
 
-2. Established risk factors for Type 2 Diabetes.
+        value = p.get(key)
 
-3. Body weight, BMI, and waist circumference.
+        if value is not None and value != "":
 
+            patient_measurements.append(
+                f"{label}: {value}"
+            )
+
+    measurement_context = "\n".join(patient_measurements)
+
+    return f"""
+Assess the evidence relevant to early Type 2 Diabetes
+risk indicators using the available patient information.
+
+PATIENT MEASUREMENTS AND HISTORY
+
+{measurement_context}
+
+Focus evidence retrieval on:
+
+1. Fasting blood glucose and HbA1c interpretation.
+2. Established Type 2 Diabetes risk factors.
+3. BMI and waist circumference.
 4. Physical activity and sedentary behaviour.
+5. Dietary factors.
+6. Blood pressure and lipid-related risk factors.
+7. Family history of diabetes.
+8. Previous prediabetes and gestational diabetes.
+9. Screening and early risk-assessment considerations.
 
-5. Dietary factors including sugary beverages,
-   added sugars, whole grains, fruits and vegetables,
-   fried/high-fat foods, and processed/packaged foods.
+Retrieve evidence relevant to the available patient information.
 
-6. Blood pressure and lipid-related cardiovascular
-   risk factors.
+Do not assume that missing measurements or medical
+conditions are present.
 
-7. Family history of diabetes and relevant medical history.
-
-8. Previous prediabetes or gestational diabetes when provided.
-
-9. Appropriate screening and early risk-assessment considerations.
-
-Use evidence directly relevant to Type 2 Diabetes.
-Avoid unrelated disease-specific evidence.
-
-The goal is to support an evidence-grounded clinical
-decision-support assessment, not to independently diagnose
-the patient.
+The purpose is evidence-grounded clinical decision support,
+not independent diagnosis.
 """
+
+
+# ============================================================
+# CLINICAL ASSESSMENT
+# ============================================================
+
 def generate_risk_assessment(patient_data, top_k=3):
+
+    patient_data = patient_data or {}
 
     patient_summary = build_patient_summary(patient_data)
 
     clinical_question = create_clinical_question(patient_data)
 
-    evidence = build_evidence_package(
-        clinical_question,
-        top_k=top_k
-    )
+    # --------------------------------------------------------
+    # EVIDENCE RETRIEVAL
+    # --------------------------------------------------------
 
-    if not evidence:
+    try:
+
+        evidence = build_evidence_package(
+            clinical_question,
+            top_k=top_k
+        )
+
+    except Exception:
+
         return {
             "success": False,
             "assessment": (
-                "Insufficient relevant evidence was retrieved "
-                "for this assessment."
+                "Evidence retrieval could not be completed. "
+                "Please review the system and try again."
             ),
             "evidence": [],
             "patient_summary": patient_summary,
             "clinical_question": clinical_question,
+            "guardrail_flags": {},
+            "guardrail_status": "NOT PERFORMED",
+        }
+
+    if not evidence:
+
+        return {
+            "success": False,
+            "assessment": (
+                "Insufficient relevant evidence was retrieved. "
+                "A reliable evidence-grounded assessment "
+                "cannot currently be generated."
+            ),
+            "evidence": [],
+            "patient_summary": patient_summary,
+            "clinical_question": clinical_question,
+            "guardrail_flags": {},
+            "guardrail_status": "NOT PERFORMED",
         }
 
     evidence_text = format_evidence_for_llm(evidence)
 
-    llm_question = f"""
-You are supporting a healthcare research prototype called
-T2D-EviGuide.
+    print("DEBUG - Patient summary length:", len(patient_summary))
+    print("DEBUG - Clinical question length:", len(clinical_question))
+    print("DEBUG - Evidence length:", len(evidence_text))
 
-The system is performing an evidence-grounded early risk
-assessment for Type 2 Diabetes.
+    # --------------------------------------------------------
+    # LLM PROMPT
+    # --------------------------------------------------------
+
+    llm_question = f"""
+You are supporting a healthcare research prototype
+called T2D-EviGuide.
+
+The system supports evidence-grounded early risk assessment
+for Type 2 Diabetes.
 
 PATIENT INFORMATION
 
@@ -256,10 +324,8 @@ RETRIEVED EVIDENCE
 
 {evidence_text}
 
-Prepare an evidence-grounded clinical assessment using ONLY
-the patient information and retrieved evidence provided above.
 
-Use the following sections:
+ASSESSMENT FORMAT
 
 1. Overall Risk Assessment
 2. Key Risk Indicators
@@ -269,127 +335,161 @@ Use the following sections:
 6. Evidence-Based Interpretation
 7. Important Limitations
 
-IMPORTANT EVIDENCE CITATION RULE:
 
-Every claim that depends on retrieved medical evidence MUST
-include an explicit evidence citation.
+EVIDENCE CITATION RULES
 
-The citation MUST use EXACTLY this format:
+Every medical interpretation based on retrieved literature
+must include a citation in this exact format:
 
 [Evidence N | ARTICLE_ID]
 
-Examples:
+Use only evidence numbers and article IDs supplied above.
 
-[Evidence 1 | AACE_2026_T2D]
-[Evidence 2 | T2D_DIAGNOSIS_REVIEW_2026]
-[Evidence 3 | USPSTF_2021_SCREENING]
+Never invent citations or article identifiers.
 
-NEVER use:
-[Evidence 1]
-[Evidence 2]
-[Evidence 3]
+Do not cite unrelated evidence.
 
-NEVER omit the ARTICLE_ID.
-NEVER invent an ARTICLE_ID.
 
-Use ONLY evidence numbers and ARTICLE_IDs that appear in the
-RETRIEVED EVIDENCE section.
+PATIENT DATA RULES
 
-IMPORTANT PATIENT DATA RULE:
+Use only the patient information supplied above.
 
-Use ONLY the patient values explicitly present in PATIENT INFORMATION.
+Do not invent:
 
-Do NOT assume that a condition exists simply because it is a
-common risk factor for Type 2 Diabetes.
+- Medical conditions
+- Symptoms
+- Laboratory values
+- Family history
+- Medication use
+- Previous diagnoses
 
-Do NOT invent or infer:
+Clearly distinguish missing information from negative findings.
 
-- previous prediabetes
-- gestational diabetes
-- hypertension
-- dyslipidemia
-- cardiovascular disease
-- kidney disease
-- liver disease
-- PCOS
-- medication use
-- symptoms
-- laboratory values
-- family-history details
+Do not assume that a condition is absent simply because
+it was not reported.
 
-If a condition is not explicitly present in PATIENT INFORMATION,
-do not state that the patient has that condition.
 
-IMPORTANT BMI RULE:
+BMI RULE
 
-Use the BMI value explicitly provided in PATIENT INFORMATION.
+Use the BMI value supplied in the patient information.
 
-Do NOT recalculate BMI if a calculated BMI is already provided.
+Do not calculate or introduce another BMI value.
 
-Do NOT create a second BMI value.
 
-IMPORTANT EVIDENCE RULE:
-
-Do not use general medical knowledge that is not supported by
-the retrieved evidence.
-
-Patient-specific facts should be labelled as patient data and
-do not require an evidence citation.
-
-Medical interpretation based on retrieved literature MUST use
-the exact evidence citation format.
-
-If evidence is insufficient for a conclusion, state that clearly.
-
-SAFETY RULES:
+CLINICAL SAFETY RULES
 
 - Do not diagnose the patient.
 - Do not provide a numerical probability.
-- Do not prescribe medications.
+- Do not prescribe medication.
 - Do not recommend medication changes or dosages.
-- Do not claim that the patient has a disease unless this is
-  explicitly documented in the patient information.
-- Clearly distinguish patient-reported measurements from
-  evidence-based interpretation.
-- Mention missing or uncertain information.
-- Do not cite evidence that is unrelated to the clinical claim.
-- Do not create citations for unsupported claims.
+- Do not claim that the patient has diabetes.
+- Distinguish patient measurements from medical interpretation.
+- Mention missing and uncertain information.
+- Do not make unsupported medical claims.
+- State clearly when evidence is insufficient.
 
-Before finishing the assessment, check that:
-
-1. Every evidence-based medical claim has [Evidence N | ARTICLE_ID].
-2. No citation uses [Evidence N] alone.
-3. Every patient condition mentioned actually appears in
-   PATIENT INFORMATION.
-4. The BMI value is consistent throughout the assessment.
-5. No unsupported medical condition has been added.
+This is a research prototype, not a substitute for
+professional clinical assessment.
 """
 
+    # --------------------------------------------------------
+    # LLM GENERATION
+    # --------------------------------------------------------
     try:
+
+        print("DEBUG - Full LLM prompt length:", len(llm_question))
 
         answer = ask_llm(
             llm_question,
-            evidence
+            []
         )
 
-        return {
-            "success": True,
-            "assessment": answer,
-            "evidence": evidence,
-            "patient_summary": patient_summary,
-            "clinical_question": clinical_question,
-        }
+        answer = str(answer).strip()
 
-    except Exception as e:
+        if not answer:
+            raise ValueError("The AI returned an empty assessment.")
 
-        return {
+    except Exception as error:
+
+     return {
             "success": False,
             "assessment": (
-                f"The AI assessment could not be generated: {e}"
+                f"AI generation failed: {type(error).__name__}: {error}"
             ),
             "evidence": evidence,
             "patient_summary": patient_summary,
             "clinical_question": clinical_question,
+            "guardrail_flags": {},
+            "guardrail_status": "NOT PERFORMED",
         }
-        
-        #charanya testing
+    # --------------------------------------------------------
+    # CLINICAL SAFETY GUARDRAILS
+    # --------------------------------------------------------
+
+    try:
+
+        guardrail_flags = check_clinical_guardrails_v2(
+            answer,
+            patient_data
+        )
+
+        triggered_flags = [
+            name
+            for name, triggered in guardrail_flags.items()
+            if triggered
+        ]
+
+        if triggered_flags:
+
+            guardrail_status = "REVIEW REQUIRED"
+
+            safety_notice = """
+
+IMPORTANT — CLINICAL SAFETY REVIEW REQUIRED
+
+The automated clinical terminology checks identified
+potential issues requiring human review.
+
+Flagged checks:
+""" + "\n".join(
+                f"- {flag}" for flag in triggered_flags
+            ) + """
+
+Do not treat this assessment as clinically cleared.
+Review the relevant measurements and interpretation.
+"""
+
+            answer = answer + "\n\n" + safety_notice
+
+        else:
+
+            guardrail_status = "NO FLAGS DETECTED"
+
+    except Exception:
+
+        guardrail_flags = {}
+
+        guardrail_status = "GUARDRAIL CHECK FAILED"
+
+        answer += """
+
+IMPORTANT — SAFETY CHECK NOT COMPLETED
+
+The automated clinical safety check could not be completed.
+This assessment requires manual review and must not be
+treated as safety-verified.
+"""
+
+    # --------------------------------------------------------
+    # FINAL RESULT
+    # --------------------------------------------------------
+
+    return {
+        "success": True,
+        "assessment": answer,
+        "evidence": evidence,
+        "patient_summary": patient_summary,
+        "clinical_question": clinical_question,
+        "guardrail_flags": guardrail_flags,
+        "guardrail_status": guardrail_status,
+    }
