@@ -1,8 +1,10 @@
-import csv
+﻿import csv
 import os
 import time
+import re
 import requests
 import xml.etree.ElementTree as ET
+from difflib import SequenceMatcher
 
 
 # ============================================================
@@ -78,8 +80,8 @@ def find_pmc_id(pmid):
 
     params = {
         "dbfrom": "pubmed",
-        "db": "pmc",
-        "id": pmid,
+        "id": str(pmid),
+        "linkname": "pubmed_pmc",
         "retmode": "xml"
     }
 
@@ -91,28 +93,26 @@ def find_pmc_id(pmid):
 
     response.raise_for_status()
 
-    root = ET.fromstring(
-        response.text
-    )
+    root = ET.fromstring(response.text)
 
     pmc_ids = []
 
-    for element in root.findall(
-        ".//Link/Id"
-    ):
+    for linkset in root.findall(".//LinkSetDb"):
 
-        if element.text:
+        link_name = linkset.findtext("LinkName")
 
-            pmc_ids.append(
-                element.text.strip()
-            )
+        if link_name != "pubmed_pmc":
+            continue
+
+        for element in linkset.findall("./Link/Id"):
+
+            if element.text:
+                pmc_ids.append(element.text.strip())
 
     if pmc_ids:
-
         return pmc_ids[0]
 
     return None
-
 
 # ============================================================
 # FETCH PMC ARTICLE
@@ -143,72 +143,139 @@ def fetch_pmc_article(pmc_id):
 
 def extract_pubmed_content(xml_text):
 
-    root = ET.fromstring(
-        xml_text
-    )
+    root = ET.fromstring(xml_text)
 
-    # --------------------------------------------------------
-    # Title
-    # --------------------------------------------------------
-
-    title_element = root.find(
-        ".//ArticleTitle"
-    )
-
-    title = ""
-
-    if title_element is not None:
-
-        title = "".join(
-            title_element.itertext()
-        ).strip()
-
-    # --------------------------------------------------------
-    # Abstract
-    # --------------------------------------------------------
+    title_element = root.find(".//ArticleTitle")
+    title = "".join(title_element.itertext()).strip() if title_element is not None else ""
 
     abstract_parts = []
 
-    for abstract_text in root.findall(
-        ".//AbstractText"
-    ):
+    for element in root.findall(".//AbstractText"):
+        text = "".join(element.itertext()).strip()
 
-        text = "".join(
-            abstract_text.itertext()
-        ).strip()
+        if text:
+            label = element.attrib.get("Label")
+            abstract_parts.append(f"{label}: {text}" if label else text)
 
-        if not text:
-            continue
+    abstract = "\n\n".join(abstract_parts)
 
-        label = abstract_text.attrib.get(
-            "Label"
-        )
+    pmid_element = root.find(".//PMID")
+    pmid = pmid_element.text.strip() if pmid_element is not None and pmid_element.text else ""
 
-        if label:
+    doi_element = root.find(".//ArticleId[@IdType='doi']")
 
-            abstract_parts.append(
-                f"{label}: {text}"
-            )
+    if doi_element is None:
+        doi_element = root.find(".//ELocationID[@EIdType='doi']")
 
-        else:
-
-            abstract_parts.append(
-                text
-            )
-
-    abstract = "\n\n".join(
-        abstract_parts
-    )
+    doi = "".join(doi_element.itertext()).strip() if doi_element is not None else ""
 
     return {
         "title": title,
-        "abstract": abstract
+        "abstract": abstract,
+        "pmid": pmid,
+        "doi": doi
+    }
+
+
+# EXTRACT PMC FULL TEXT
+# ============================================================
+# ============================================================
+# EXTRACT PMC ARTICLE METADATA
+# ============================================================
+
+def extract_pmc_metadata(xml_text):
+
+    root = ET.fromstring(xml_text)
+
+    pmid = ""
+    doi = ""
+    title = ""
+
+    for element in root.findall(".//article-meta/article-id"):
+
+        id_type = element.attrib.get("pub-id-type", "").lower()
+        value = "".join(element.itertext()).strip()
+
+        if id_type == "pmid":
+            pmid = value
+
+        elif id_type == "doi":
+            doi = value
+
+    title_element = root.find(
+        ".//article-meta/title-group/article-title"
+    )
+
+    if title_element is not None:
+        title = "".join(title_element.itertext()).strip()
+
+    return {
+        "pmid": pmid,
+        "doi": doi,
+        "title": title
     }
 
 
 # ============================================================
-# EXTRACT PMC FULL TEXT
+# VERIFY PMC ARTICLE IDENTITY
 # ============================================================
+
+def verify_pmc_identity(article, pmc_metadata):
+
+    expected_pmid = str(article.get("pmid", "")).strip()
+    actual_pmid = str(pmc_metadata.get("pmid", "")).strip()
+
+    if not expected_pmid or not actual_pmid:
+        return False, "PMID missing"
+
+    if expected_pmid != actual_pmid:
+        return False, "PMID mismatch"
+
+    expected_doi = str(article.get("doi", "")).strip().lower()
+    actual_doi = str(pmc_metadata.get("doi", "")).strip().lower()
+
+    expected_doi = re.sub(
+        r"^https?://(dx\\.)?doi\\.org/",
+        "",
+        expected_doi
+    )
+
+    actual_doi = re.sub(
+        r"^https?://(dx\\.)?doi\\.org/",
+        "",
+        actual_doi
+    )
+
+    if expected_doi and actual_doi:
+        if expected_doi != actual_doi:
+            return False, "DOI mismatch"
+
+    expected_title = str(article.get("title", "")).strip()
+    actual_title = str(pmc_metadata.get("title", "")).strip()
+
+    normalize = lambda value: re.sub(
+        r"[^a-z0-9]+",
+        "",
+        value.lower()
+    )
+
+    expected_normalized = normalize(expected_title)
+    actual_normalized = normalize(actual_title)
+
+    if not expected_normalized or not actual_normalized:
+        return False, "Article title missing"
+
+    similarity = SequenceMatcher(
+        None,
+        expected_normalized,
+        actual_normalized
+    ).ratio()
+
+    if similarity < 0.90:
+        return False, f"Title mismatch (similarity: {similarity:.2f})"
+
+    return True, "PMID, DOI and title verification passed"
+
 
 def extract_pmc_full_text(xml_text):
 
@@ -456,55 +523,158 @@ def build_literature_collection():
             )
 
             # ------------------------------------------------
-            # Try to find PMC record
+            # VERIFY PUBMED ARTICLE IDENTITY
             # ------------------------------------------------
 
-            pmc_id = find_pmc_id(
-                pmid
+            returned_pmid = str(
+                article_text.get("pmid", "")
+            ).strip()
+
+            if returned_pmid != pmid:
+                print("  PubMed PMID mismatch. Article rejected.")
+                failed += 1
+                continue
+
+            expected_doi = str(
+                article.get("doi", "")
+            ).strip().lower()
+
+            returned_doi = str(
+                article_text.get("doi", "")
+            ).strip().lower()
+
+            expected_doi = re.sub(
+                r"^https?://(dx\.)?doi\.org/",
+                "",
+                expected_doi
             )
+
+            returned_doi = re.sub(
+                r"^https?://(dx\.)?doi\.org/",
+                "",
+                returned_doi
+            )
+
+            if (
+                expected_doi
+                and returned_doi
+                and expected_doi != returned_doi
+            ):
+                print("  PubMed DOI mismatch. Article rejected.")
+                failed += 1
+                continue
+
+            expected_title = str(
+                article.get("title", "")
+            ).strip()
+
+            returned_title = str(
+                article_text.get("title", "")
+            ).strip()
+
+            normalize_title = lambda value: re.sub(
+                r"[^a-z0-9]+",
+                "",
+                value.lower()
+            )
+
+            title_similarity = SequenceMatcher(
+                None,
+                normalize_title(expected_title),
+                normalize_title(returned_title)
+            ).ratio()
+
+            if (
+                not expected_title
+                or not returned_title
+                or title_similarity < 0.90
+            ):
+                print(
+                    f"  PubMed title mismatch "
+                    f"(similarity: {title_similarity:.2f}). "
+                    "Article rejected."
+                )
+                failed += 1
+                continue
+
+            print(
+                "  PubMed identity verified: "
+                "PMID, DOI and title checks passed."
+            )
+
+            # ------------------------------------------------
+            # Try to find and verify PMC record
+            # ------------------------------------------------
+
+            pmc_id = find_pmc_id(pmid)
 
             full_text = ""
 
             if pmc_id:
 
-                print(
-                    f"  PMC record found: PMC{pmc_id}"
-                )
+                print(f"  PMC record found: PMC{pmc_id}")
 
                 try:
 
-                    pmc_xml = fetch_pmc_article(
-                        pmc_id
-                    )
+                    pmc_xml = fetch_pmc_article(pmc_id)
 
-                    full_text = extract_pmc_full_text(
+                    # Extract PMC identity metadata
+                    pmc_metadata = extract_pmc_metadata(
                         pmc_xml
                     )
 
-                    if full_text:
+                    # Verify against registered article
+                    is_verified, verification_message = verify_pmc_identity(
+                        article,
+                        pmc_metadata
+                    )
 
-                        print(
-                            "  Full-text content retrieved."
+                    print(
+                        f"  PMC identity check: {verification_message}"
+                    )
+
+                    if is_verified:
+
+                        full_text = extract_pmc_full_text(
+                            pmc_xml
                         )
 
-                        full_text_count += 1
+                        if full_text:
+
+                            print(
+                                "  Verified full-text content retrieved."
+                            )
+
+                            full_text_count += 1
+
+                        else:
+
+                            print(
+                                "  Verified PMC record, "
+                                "but no article body was extracted."
+                            )
+
+                            abstract_only_count += 1
 
                     else:
 
                         print(
-                            "  PMC record found, "
-                            "but no article body was extracted."
+                            "  PMC identity verification failed. "
+                            "Full text rejected."
                         )
 
+                        pmc_id = None
                         abstract_only_count += 1
 
                 except Exception as pmc_error:
 
                     print(
-                        f"  PMC retrieval failed: "
+                        f"  PMC retrieval or verification failed: "
                         f"{pmc_error}"
                     )
 
+                    pmc_id = None
+                    full_text = ""
                     abstract_only_count += 1
 
             else:
@@ -514,8 +684,6 @@ def build_literature_collection():
                 )
 
                 abstract_only_count += 1
-
-            # ------------------------------------------------
             # Save
             # ------------------------------------------------
 
@@ -585,3 +753,5 @@ def build_literature_collection():
 if __name__ == "__main__":
 
     build_literature_collection()
+
+
