@@ -1,8 +1,11 @@
-import json
+﻿import json
 import os
 
 import chromadb
 from sentence_transformers import SentenceTransformer
+from langdetect import detect, DetectorFactory
+
+DetectorFactory.seed = 0
 
 
 # ============================================================
@@ -387,6 +390,10 @@ def search_evidence(
     query_terms = extract_query_terms(
         query
     )
+    try:
+        query_language = detect(query)
+    except Exception:
+        query_language = None
 
     candidates = []
 
@@ -400,6 +407,10 @@ def search_evidence(
             continue
 
         metadata = metadata or {}
+        try:
+            document_language = detect(document)
+        except Exception:
+            document_language = None
 
         lexical_score = lexical_relevance(
             document,
@@ -420,6 +431,7 @@ def search_evidence(
             {
                 "document": document,
                 "metadata": metadata,
+                "language": document_language,
                 "distance": float(distance),
                 "semantic_score": semantic_score,
                 "lexical_score": lexical_score,
@@ -437,53 +449,93 @@ def search_evidence(
     if filtered_candidates:
         candidates = filtered_candidates
 
-    candidates.sort(
-        key=lambda x: x["combined_score"],
-        reverse=True
-    )
+    if query_language:
+        preferred_candidates = [
+            candidate
+            for candidate in candidates
+            if candidate["language"] == query_language
+        ]
 
-    selected = []
+        if len(preferred_candidates) >= top_k:
+            candidates = preferred_candidates
 
-    seen_articles = set()
-
-    for candidate in candidates:
-
-        article_id = candidate[
-            "metadata"
-        ].get(
-            "article_id",
-            ""
+    if query_language:
+        candidates.sort(
+            key=lambda x: (
+                x["language"] == query_language,
+                x["combined_score"]
+            ),
+            reverse=True
         )
+    else:
+        candidates.sort(
+            key=lambda x: x["combined_score"],
+            reverse=True
+        )
+    selected = []
+    seen_articles = set()
+    selected_ids = set()
+
+    preferred_candidates = [
+        candidate for candidate in candidates
+        if candidate["language"] == query_language
+    ]
+
+    fallback_candidates = [
+        candidate for candidate in candidates
+        if candidate["language"] != query_language
+    ]
+
+    for candidate in preferred_candidates:
+        article_id = candidate["metadata"].get("article_id", "")
 
         if article_id in seen_articles:
             continue
 
-        selected.append(
-            candidate
-        )
-
-        seen_articles.add(
-            article_id
-        )
+        selected.append(candidate)
+        selected_ids.add(id(candidate))
+        seen_articles.add(article_id)
 
         if len(selected) >= top_k:
             break
 
     if len(selected) < top_k:
+        for candidate in preferred_candidates:
+            if id(candidate) in selected_ids:
+                continue
 
-        selected_ids = {
-            id(candidate)
-            for candidate in selected
-        }
+            selected.append(candidate)
+            selected_ids.add(id(candidate))
 
-        for candidate in candidates:
+            if len(selected) >= top_k:
+                break
+
+    if len(selected) < top_k:
+        for candidate in fallback_candidates:
+            if id(candidate) in selected_ids:
+                continue
+
+            selected.append(candidate)
+            selected_ids.add(id(candidate))
+
+            if len(selected) >= top_k:
+                break
+
+    return selected
+
+    # --------------------------------------------------------
+    # 3. Use other languages only as fallback
+    # --------------------------------------------------------
+
+    if len(selected) < top_k:
+
+        for candidate in fallback_candidates:
 
             if id(candidate) in selected_ids:
                 continue
 
-            selected.append(
-                candidate
-            )
+            selected.append(candidate)
+            selected_ids.add(id(candidate))
 
             if len(selected) >= top_k:
                 break
@@ -562,6 +614,10 @@ def build_evidence_package(
                 "section": metadata.get(
                     "section",
                     ""
+                ),
+                "language": result.get(
+                    "language",
+                     "unknown"
                 ),
 
                 "distance": result.get(

@@ -153,6 +153,7 @@ def format_evidence_for_llm(evidence):
         year = item.get("year", item.get("publication_year", "Not available"))
         pmid = item.get("pmid", "Not available")
         doi = item.get("doi", "Not available")
+        language = item.get("language") or "unknown"
 
         text = item.get(
             "text",
@@ -168,6 +169,7 @@ Source: {source}
 Publication year: {year}
 PMID: {pmid}
 DOI: {doi}
+Language: {language}
 
 Evidence:
 {text}
@@ -348,7 +350,19 @@ Use only evidence numbers and article IDs supplied above.
 Never invent citations or article identifiers.
 
 Do not cite unrelated evidence.
+EVIDENCE LANGUAGE SAFETY RULES
 
+Check the language label provided for every evidence source.
+
+1. Prefer English-language evidence when answering English clinical questions.
+2. Do not present German or Spanish source text as English.
+3. Do not claim that a source has been translated unless a verified translation is available.
+4. Clearly identify non-English sources when citing them.
+5. If non-English evidence is important to the assessment, state that human translation and verification are required.
+6. Do not silently exclude relevant evidence or misrepresent its meaning.
+7. Do not use unverified non-English evidence as the sole basis
+   for a clinical conclusion. Clearly flag it for translation
+   and human verification.
 
 PATIENT DATA RULES
 

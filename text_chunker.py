@@ -329,6 +329,10 @@ def process_article(file_name):
         ["FULL_TEXT"]
     )
 
+    # Reject generic ADA boilerplate abstracts
+    if not full_text and abstract and is_generic_abstract(abstract):
+        return []
+
     # --------------------------------------------------------
     # Prefer full text when available
     # --------------------------------------------------------
@@ -443,6 +447,7 @@ def build_chunks():
     full_text_sources = 0
     abstract_sources = 0
     empty_sources = 0
+    generic_abstract_sources = 0
 
     for file_name in files:
 
@@ -467,7 +472,28 @@ def build_chunks():
 
         else:
 
-            empty_sources += 1
+            file_path = os.path.join(INPUT_DIR, file_name)
+
+            with open(file_path, "r", encoding="utf-8") as file:
+                article_text = file.read()
+
+            abstract = extract_section(
+                article_text,
+                "ABSTRACT",
+                ["FULL_TEXT"]
+            )
+
+            full_text = extract_section(
+                article_text,
+                "FULL_TEXT"
+            )
+
+            if not full_text and abstract and is_generic_abstract(abstract):
+                generic_abstract_sources += 1
+                print(f"{file_name}: excluded (generic ADA abstract)")
+            else:
+                empty_sources += 1
+                print(f"{file_name}: excluded (no usable content)")
 
         print(
             f"{file_name}: "
@@ -477,7 +503,31 @@ def build_chunks():
         all_chunks.extend(
             records
         )
+    # --------------------------------------------------------
+    # Remove exact duplicate chunks
+    # --------------------------------------------------------
 
+    unique_chunks = []
+    seen_chunks = set()
+
+    for chunk in all_chunks:
+
+        key = (
+            chunk["article_id"],
+            chunk["section"],
+            chunk["text"].strip()
+        )
+
+        if key not in seen_chunks:
+            seen_chunks.add(key)
+            unique_chunks.append(chunk)
+
+    duplicates_removed = len(all_chunks) - len(unique_chunks)
+    all_chunks = unique_chunks
+
+    print(
+        f"Exact duplicate chunks removed: {duplicates_removed}"
+    )
     # --------------------------------------------------------
     # Save
     # --------------------------------------------------------
@@ -525,6 +575,11 @@ def build_chunks():
     )
 
     print(
+        f"Generic abstracts excluded: "
+        f"{generic_abstract_sources}"
+    )
+
+    print(
         f"Total chunks:        "
         f"{len(all_chunks)}"
     )
@@ -533,6 +588,21 @@ def build_chunks():
         f"Saved to: "
         f"{OUTPUT_FILE}"
     )
+
+# ============================================================
+# ABSTRACT QUALITY VALIDATION
+# ============================================================
+
+def is_generic_abstract(abstract):
+
+    text = re.sub(r"\s+", " ", abstract).lower()
+
+    generic_marker = (
+        'the american diabetes association (ada) '
+        '"standards of care in diabetes" includes'
+    )
+
+    return generic_marker in text
 
 
 # ============================================================
