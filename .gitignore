@@ -62,3 +62,8 @@ Thumbs.db
 *.bak
 # Local backup - do not upload
 T2D-EviGuide-BACKUP/
+
+# Local troubleshooting backups
+backend/ai_engine_backup_*.py
+clinical_assessment_broken_backup.py
+clinical_validation_broken_backup.py
