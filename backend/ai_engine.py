@@ -30,13 +30,14 @@ Rules:
 12. Never invent a risk score or imply that a validated risk calculator
     was applied unless its calculated result was supplied.
 
-Return a complete, concise assessment with these headings:
-- Summary
-- Relevant Risk Factors
-- Evidence-Based Findings
-- Limitations and Uncertainty
-- Clinical Review Needed
-
+Return a complete, concise assessment with these seven headings:
+1. Overall Risk Assessment
+2. Key Risk Indicators
+3. Relevant Clinical Measurements
+4. Protective or Lower-Risk Factors
+5. Missing or Uncertain Information
+6. Evidence-Based Interpretation
+7. Important Limitations
 Finish every section. Do not stop halfway through a sentence.
 """
 
@@ -99,6 +100,14 @@ def _call_openrouter(messages, max_tokens):
         raise RuntimeError(
             "OpenRouter returned an invalid JSON response."
         ) from error
+
+    print("\n--- OPENROUTER RESPONSE DIAGNOSTICS ---")
+    print("Requested model:", MODEL_NAME)
+    print("Actual model:", result.get("model"))
+    print("Provider:", result.get("provider"))
+    print("Usage:", result.get("usage"))
+    print("Finish reason:", _get_finish_reason(result))
+    print("---------------------------------------\n")
 
     return result
 
@@ -191,7 +200,7 @@ Retrieved medical evidence:
 Write a complete, concise clinical information assessment.
 
 Requirements:
-- Include all five headings specified in the system instructions.
+- Include all seven headings specified in the system instructions.
 - Use only the supplied patient information and retrieved evidence.
 - Cite evidence-based claims using the supplied [Evidence N] identifiers.
 - Do not invent missing values, diagnoses, scores, statistics, or references.
@@ -206,40 +215,32 @@ Requirements:
     ]
 
     # First attempt.
-    result = _call_openrouter(messages, max_tokens=2000)
+    result = _call_openrouter(messages, max_tokens=8000)
     answer = _extract_text(result)
     finish_reason = _get_finish_reason(result)
 
     if answer and not _looks_incomplete(answer, finish_reason):
         return answer
 
-    # Retry with a shorter response requirement if output is empty or truncated.
+      # Retry while preserving the original clinical safety instructions.
     retry_messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are an evidence-grounded clinical information assistant. "
-                "Do not invent facts, diagnoses, scores, statistics, or "
-                "references. Do not prescribe. Distinguish risk assessment "
-                "from diagnosis. Use only supplied patient information and "
-                "evidence. Cite supported claims as [Evidence N]."
-            ),
-        },
+        {"role": "system", "content": SYSTEM_PROMPT},
         {
             "role": "user",
             "content": (
-                f"Patient information and clinical question:\n{question}\n\n"
-                f"Retrieved evidence:\n{evidence_text}\n\n"
-                "Write a brief but COMPLETE assessment with these headings: "
-                "Summary; Relevant Risk Factors; Evidence-Based Findings; "
-                "Limitations and Uncertainty; Clinical Review Needed. "
-                "Use short bullets. Complete every section and every sentence. "
-                "Do not invent unsupported facts or references."
+                f"{user_prompt}\n\n"
+                "RETRY INSTRUCTIONS:\n"
+                "Provide a shorter but complete assessment.\n"
+                "Include all seven required headings.\n"
+                "Use concise bullets under each heading.\n"
+                "Preserve all patient-data, evidence citation, "
+                "language and clinical safety rules.\n"
+                "Do not omit important limitations or uncertainty."
             ),
         },
     ]
 
-    retry_result = _call_openrouter(retry_messages, max_tokens=1600)
+    retry_result = _call_openrouter(retry_messages, max_tokens=8000)
     retry_answer = _extract_text(retry_result)
     retry_finish_reason = _get_finish_reason(retry_result)
 
